@@ -49,3 +49,70 @@ body{
     }
 
 }
+.welcome-container{
+
+    width:100%;
+    text-align:center;
+    padding:30px;
+
+}
+
+.welcome-logo{
+
+    width:140px;
+    margin-bottom:20px;
+
+}
+
+h1{
+
+    color:#ffffff;
+    font-size:42px;
+    margin-bottom:12px;
+
+}
+
+.tagline{
+
+    color:#9fb8ff;
+    margin-bottom:50px;
+    font-size:18px;
+
+}
+
+.google-btn{
+
+    width:280px;
+    height:55px;
+
+    background:transparent;
+
+    border:2px solid #ff3b3b;
+
+    color:white;
+
+    border-radius:15px;
+
+    cursor:pointer;
+
+    font-size:17px;
+
+    transition:.3s;
+
+}
+
+.google-btn:hover{
+
+    background:#ff3b3b;
+
+}
+
+.terms{
+
+    color:#888;
+
+    font-size:13px;
+
+    margin-top:40px;
+
+}
