@@ -13,15 +13,13 @@
 
 <body>
 
-    <!-- Splash Screen -->
     <div id="splash-screen">
 
-        <img src="assets/logo/nexa-logo.png"
-             alt="Nexa Logo"
-             id="logo">
+        <img
+            src="assets/logo/nexa-logo.png"
+            alt="Nexa Logo"
+            id="logo">
 
     </div>
 
 </body>
-
-</html>
