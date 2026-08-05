@@ -1,168 +1,116 @@
 /**
  * @file chat.js
- * @description Module 7 controller managing active messaging sessions, E2EE message threads, and real-time interaction.
+ * @description Module 7 & 9 controller managing active chat workspaces, real-time Socket.io message broadcasting, connection resilience, and optimistic UI rendering.
  */
 
 document.addEventListener('DOMContentLoaded', () => {
     'use strict';
 
-    const emptyChatState = document.getElementById('empty-chat-state');
-    const activeChatContainer = document.getElementById('active-chat-container');
-    const activePeerAvatar = document.getElementById('active-peer-avatar');
-    const activePeerName = document.getElementById('active-peer-name');
-    const activePeerStatus = document.getElementById('active-peer-status');
-    const messageScrollArea = document.getElementById('message-scroll-area');
-    const messageTextInput = document.getElementById('message-text-input');
-    const sendMessageBtn = document.getElementById('send-message-btn');
-    const voiceCallBtn = document.getElementById('voice-call-btn');
-    const videoCallBtn = document.getElementById('video-call-btn');
+    // Initialize Socket Connection (provided by socket.io script loaded in index.html)
+    const socket = typeof io !== 'undefined' ? io() : null;
 
-    let currentActiveChatId = null;
-    let currentUserSession = null;
+    const messageInput = document.getElementById('message-text-input');
+    const sendBtn = document.getElementById('send-message-btn');
+    const scrollArea = document.getElementById('message-scroll-area');
+    
+    let currentUsername = 'Pioneer'; // Default fallback, updated via module state if available
 
-    // Mock thread store per conversation
-    const chatThreads = {
-        'chat_1': [
-            { sender: 'incoming', text: 'Hey there! Just checking in on the Nexa alpha release.', time: '10:38 AM' },
-            { sender: 'outgoing', text: 'Everything is running smoothly. Testing the security modules now.', time: '10:40 AM' },
-            { sender: 'incoming', text: 'The encryption handshake verified successfully! 🔒', time: '10:42 AM' }
-        ],
-        'chat_2': [
-            { sender: 'incoming', text: 'Let’s review the architecture specs for Module 7.', time: 'Yesterday' }
-        ],
-        'chat_3': [
-            { sender: 'incoming', text: 'System update v0.1 Alpha deployed seamlessly.', time: 'Aug 3' }
-        ],
-        'chat_4': [
-            { sender: 'incoming', text: 'Voice call quality is exceptionally crisp.', time: 'Aug 1' }
-        ]
-    };
-
-    // Listen for session data from Module 5/6
+    // Listen for state updates from earlier user profile modules
     window.addEventListener('nexa:module5Complete', (event) => {
-        currentUserSession = event.detail;
-    });
-
-    // Intercept chat card clicks from home.js to load active conversation
-    document.addEventListener('click', (e) => {
-        const chatCard = e.target.closest('.chat-card');
-        if (!chatCard) return;
-
-        // Retrieve chat info from DOM element
-        const name = chatCard.querySelector('.chat-name').textContent;
-        const avatar = chatCard.querySelector('.chat-avatar-wrapper img').src;
-        const online = chatCard.querySelector('.online-indicator') !== null;
-
-        // Derive active chat ID from position or name match
-        currentActiveChatId = name.toLowerCase().replace(/\s+/g, '_');
-
-        // Ensure thread exists
-        if (!chatThreads[currentActiveChatId]) {
-            chatThreads[currentActiveChatId] = [
-                { sender: 'incoming', text: `Hello! Connected securely with ${name}.`, time: 'Just now' }
-            ];
+        if (event.detail && event.detail.username) {
+            currentUsername = event.detail.username;
+            if (socket) {
+                socket.emit('user_connected', { username: currentUsername });
+            }
         }
-
-        // Activate workspace UI
-        emptyChatState.classList.add('hidden');
-        activeChatContainer.classList.remove('hidden');
-
-        activePeerName.textContent = name;
-        activePeerAvatar.src = avatar;
-        activePeerStatus.textContent = online ? 'online' : 'offline';
-        activePeerStatus.style.color = online ? '#00C853' : 'rgba(255,255,255,0.4)';
-
-        renderMessages(currentActiveChatId);
-        console.info('[Module 7] Loaded active conversation thread for:', name);
     });
 
-    // Render message history for active chat
-    function renderMessages(chatId) {
-        messageScrollArea.innerHTML = '';
-        const thread = chatThreads[chatId] || [];
-
-        thread.forEach(msg => {
-            const row = document.createElement('div');
-            row.className = `message-bubble-row ${msg.sender}`;
-            row.innerHTML = `
-                <div class="message-bubble">
-                    <span class="message-text">${msg.text}</span>
-                    <div class="message-meta">
-                        <span>${msg.time}</span>
-                        ${msg.sender === 'outgoing' ? `
-                            <svg class="message-status-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                        ` : ''}
-                    </div>
-                </div>
-            `;
-            messageScrollArea.appendChild(row);
+    if (socket) {
+        // Handle successful connection feedback
+        socket.on('connect', () => {
+            console.info('[Nexa Real-Time] Connected to socket server with ID:', socket.id);
+            socket.emit('user_connected', { username: currentUsername });
         });
 
-        // Scroll to bottom
-        messageScrollArea.scrollTop = messageScrollArea.scrollHeight;
+        // Handle disconnection feedback
+        socket.on('disconnect', (reason) => {
+            console.warn('[Nexa Real-Time] Disconnected from server:', reason);
+        });
+
+        // Listen for incoming messages from peer clients
+        socket.on('receive_message', (data) => {
+            appendMessage(data.content, 'received', data.timestamp);
+        });
+    } else {
+        console.warn('[Nexa Real-Time] Socket.io client not detected. Running in offline UI mode.');
     }
 
-    // Handle sending a new message
+    /**
+     * Handles sending an outgoing message (optimistic UI render + socket emit)
+     */
     function handleSendMessage() {
-        const text = messageTextInput.value.trim();
-        if (!text || !currentActiveChatId) return;
+        const text = messageInput.value.trim();
+        if (!text) return;
 
-        const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const timestamp = new Date().toISOString();
 
-        // Push to thread
-        if (!chatThreads[currentActiveChatId]) {
-            chatThreads[currentActiveChatId] = [];
+        // 1. Render message locally immediately (optimistic UI update)
+        appendMessage(text, 'sent', timestamp);
+
+        // 2. Emit encrypted payload to the backend server
+        if (socket) {
+            socket.emit('send_message', { content: text });
         }
 
-        chatThreads[currentActiveChatId].push({
-            sender: 'outgoing',
-            text: text,
-            time: timeStr
-        });
-
-        messageTextInput.value = '';
-        renderMessages(currentActiveChatId);
-
-        console.info('[Module 7] Sent E2EE message:', text);
-
-        // Simulate incoming peer acknowledgment response after 1.5s
-        setTimeout(() => {
-            if (!currentActiveChatId) return;
-            const ackTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            chatThreads[currentActiveChatId].push({
-                sender: 'incoming',
-                text: 'Message received and verified securely! ⚡',
-                time: ackTime
-            });
-            renderMessages(currentActiveChatId);
-        }, 1500);
+        // 3. Clear input field and restore focus
+        messageInput.value = '';
+        messageInput.focus();
     }
 
-    if (sendMessageBtn) {
-        sendMessageBtn.addEventListener('click', handleSendMessage);
+    /**
+     * Appends a formatted message bubble to the chat scroll area
+     * @param {string} text - Message content
+     * @param {string} type - 'sent' or 'received'
+     * @param {string} timeString - ISO timestamp string
+     */
+    function appendMessage(text, type, timeString) {
+        if (!scrollArea) return;
+
+        const msgEl = document.createElement('div');
+        msgEl.className = `message-bubble ${type}`;
+        
+        const content = document.createElement('p');
+        content.textContent = text;
+        
+        const time = document.createElement('span');
+        time.className = 'message-time';
+        
+        // Format time nicely for local view
+        const dateObj = new Date(timeString);
+        time.textContent = isNaN(dateObj.getTime()) 
+            ? new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            : dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+        msgEl.appendChild(content);
+        msgEl.appendChild(time);
+        
+        scrollArea.appendChild(msgEl);
+        
+        // Auto-scroll to the bottom of the conversation history
+        scrollArea.scrollTop = scrollArea.scrollHeight;
     }
 
-    if (messageTextInput) {
-        messageTextInput.addEventListener('keydown', (e) => {
+    // Event Listeners for Interaction Controls
+    if (sendBtn) {
+        sendBtn.addEventListener('click', handleSendMessage);
+    }
+
+    if (messageInput) {
+        messageInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 e.preventDefault();
                 handleSendMessage();
             }
-        });
-    }
-
-    // Call action triggers
-    if (voiceCallBtn) {
-        voiceCallBtn.addEventListener('click', () => {
-            alert(`Initializing secure end-to-end encrypted voice call with ${activePeerName.textContent}...`);
-            console.info('[Module 7] Voice call initiated.');
-        });
-    }
-
-    if (videoCallBtn) {
-        videoCallBtn.addEventListener('click', () => {
-            alert(`Initializing secure HD video call with ${activePeerName.textContent}...`);
-            console.info('[Module 7] Video call initiated.');
         });
     }
 });
