@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="css/profile.css">
     <link rel="stylesheet" href="css/home.css">
     <link rel="stylesheet" href="css/chat.css">
+    <link rel="stylesheet" href="css/settings.css">
 </head>
 <body>
     <!-- Root Application Container -->
@@ -246,7 +247,7 @@
             </div>
         </section>
 
-        <!-- Module 6 & 7: Home Screen & Messaging Workspace Container -->
+        <!-- Module 6, 7 & 8: Home Screen, Messaging & Settings Workspace Container -->
         <section id="home-screen" class="home-screen hidden" aria-label="Nexa Home Dashboard" aria-hidden="true">
             <div class="home-layout">
                 <!-- Sidebar Navigation -->
@@ -295,8 +296,8 @@
                     </div>
                 </nav>
 
-                <!-- Primary Chats Panel -->
-                <aside class="home-panel" aria-label="Chats Panel">
+                <!-- Primary Dynamic Panel (Chats or Settings) -->
+                <aside class="home-panel" id="primary-home-panel" aria-label="Primary Panel">
                     <div class="panel-header">
                         <div class="panel-title-row">
                             <h2 id="active-panel-title">Chats</h2>
@@ -321,9 +322,9 @@
                     </div>
                 </aside>
 
-                <!-- Module 7: Active Conversation Workspace -->
-                <section class="home-chat-area" id="chat-workspace" aria-label="Active Conversation View">
-                    <!-- Default Initial Empty State -->
+                <!-- Module 8: Settings Workspace Container (Replaces Chat Area when Settings tab is active) -->
+                <section class="home-chat-area" id="workspace-area" aria-label="Workspace Area">
+                    <!-- Default Initial Empty State for Chats -->
                     <div id="empty-chat-state" class="empty-chat-state">
                         <div class="empty-chat-icon" aria-hidden="true">
                             <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
@@ -332,7 +333,7 @@
                         <p>Select a conversation from the sidebar or start a new chat to connect without limits.</p>
                     </div>
 
-                    <!-- Active Conversation Container (Hidden until chat selected) -->
+                    <!-- Active Conversation Container (Module 7) -->
                     <div id="active-chat-container" class="active-chat-container hidden">
                         <!-- Chat Header -->
                         <div class="chat-workspace-header">
@@ -366,9 +367,7 @@
                         </div>
 
                         <!-- Message History Scroll Area -->
-                        <div id="message-scroll-area" class="message-scroll-area" role="log" aria-label="Message History">
-                            <!-- Populated dynamically via chat.js -->
-                        </div>
+                        <div id="message-scroll-area" class="message-scroll-area" role="log" aria-label="Message History"></div>
 
                         <!-- Message Input Toolbar -->
                         <div class="message-input-toolbar">
@@ -376,18 +375,89 @@
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
                             </button>
                             <div class="message-input-wrapper">
-                                <input 
-                                    type="text" 
-                                    id="message-text-input" 
-                                    placeholder="Type a secure message..." 
-                                    autocomplete="off"
-                                    aria-label="Type a secure message"
-                                >
+                                <input type="text" id="message-text-input" placeholder="Type a secure message..." autocomplete="off" aria-label="Type a secure message">
                                 <button id="emoji-picker-btn" class="emoji-btn" aria-label="Emoji Picker" title="Emojis">😊</button>
                             </div>
                             <button id="send-message-btn" class="send-btn" aria-label="Send Message" title="Send Message">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
                             </button>
+                        </div>
+                    </div>
+
+                    <!-- Module 8: Settings Workspace View -->
+                    <div id="settings-view" class="settings-view hidden" aria-label="Settings and Security View">
+                        <div class="settings-header">
+                            <h2>Settings & Security</h2>
+                            <p>Manage your Nexa account preferences, cryptographic keys, and device sessions.</p>
+                        </div>
+
+                        <div class="settings-scroll-area">
+                            <!-- User Account Overview Card -->
+                            <div class="settings-card profile-settings-card">
+                                <div class="settings-avatar-wrapper">
+                                    <img id="settings-avatar-img" src="" alt="User Avatar">
+                                </div>
+                                <div class="settings-user-meta">
+                                    <h3 id="settings-display-name">Pioneer Name</h3>
+                                    <span id="settings-username-handle">@username</span>
+                                    <span id="settings-email-label">user@gmail.com</span>
+                                </div>
+                            </div>
+
+                            <!-- Cryptographic E2EE Keys Section -->
+                            <div class="settings-section-block">
+                                <h4>End-to-End Encryption</h4>
+                                <div class="settings-card security-card">
+                                    <div class="security-key-info">
+                                        <div class="key-icon-box">
+                                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.778-7.778zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+                                        </div>
+                                        <div>
+                                            <h5>Device Public Key Fingerprint</h5>
+                                            <code id="key-fingerprint-code">4f82:9b11:c37e:88a2:10fa:44de:39bc:012f</code>
+                                        </div>
+                                    </div>
+                                    <button id="verify-keys-btn" class="nexa-btn nexa-btn-secondary" type="button">Verify Security Keys</button>
+                                </div>
+                            </div>
+
+                            <!-- Preferences & Customization Section -->
+                            <div class="settings-section-block">
+                                <h4>Preferences</h4>
+                                <div class="settings-card preferences-card">
+                                    <div class="pref-toggle-row">
+                                        <div class="pref-text">
+                                            <h5>Dark Theme Accent</h5>
+                                            <p>Optimized OLED deep dark mode</p>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" id="dark-theme-toggle" checked>
+                                            <span class="slider"></span>
+                                        </label>
+                                    </div>
+                                    <div class="pref-toggle-row">
+                                        <div class="pref-text">
+                                            <h5>Read Receipts</h5>
+                                            <p>Let others know when you have read messages</p>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" id="read-receipts-toggle" checked>
+                                            <span class="slider"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Session Control Section -->
+                            <div class="settings-section-block">
+                                <h4>Session Control</h4>
+                                <div class="settings-card session-card">
+                                    <button id="logout-btn" class="nexa-btn nexa-btn-danger" type="button">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                                        <span>Sign Out of Nexa</span>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -404,5 +474,6 @@
     <script src="js/profile.js" defer></script>
     <script src="js/home.js" defer></script>
     <script src="js/chat.js" defer></script>
+    <script src="js/settings.js" defer></script>
 </body>
 </html>
