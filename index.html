@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="css/splash.css">
     <link rel="stylesheet" href="css/welcome.css">
     <link rel="stylesheet" href="css/auth.css">
+    <link rel="stylesheet" href="css/username.css">
 </head>
 <body>
     <!-- Root Application Container -->
@@ -100,7 +101,7 @@
             </div>
         </section>
 
-        <!-- Module 3: Authentication Screen Container (Hidden initially) -->
+        <!-- Module 3: Authentication Screen Container -->
         <section id="auth-screen" class="auth-screen hidden" aria-label="Sign in to Nexa" aria-hidden="true">
             <div class="auth-container">
                 <div class="auth-header">
@@ -139,7 +140,6 @@
                         <span>Continue with Google</span>
                     </button>
 
-                    <!-- Authentication Loading State Indicator -->
                     <div id="auth-loading" class="auth-loading hidden" aria-hidden="true">
                         <div class="spinner"></div>
                         <span>Establishing secure connection...</span>
@@ -151,6 +151,53 @@
                 </div>
             </div>
         </section>
+
+        <!-- Module 4: Username Selection Screen Container (Hidden initially) -->
+        <section id="username-screen" class="username-screen hidden" aria-label="Choose your Nexa username" aria-hidden="true">
+            <div class="username-container">
+                <div class="username-header">
+                    <h2>Choose Your Identity</h2>
+                    <p>Your unique username defines your handle across Nexa.</p>
+                </div>
+
+                <div class="username-card">
+                    <div class="input-group">
+                        <label for="username-input">Unique Username</label>
+                        <div class="input-wrapper">
+                            <span class="input-prefix" aria-hidden="true">@</span>
+                            <input 
+                                type="text" 
+                                id="username-input" 
+                                placeholder="pioneer" 
+                                autocomplete="off" 
+                                autocapitalize="off" 
+                                spellcheck="false"
+                                maxlength="24"
+                                aria-describedby="username-feedback"
+                            >
+                            <div id="username-status-icon" class="status-icon hidden" aria-hidden="true">
+                                <!-- Dynamic check or error indicator -->
+                            </div>
+                        </div>
+                        <div id="username-feedback" class="input-feedback" aria-live="polite">
+                            Use 3-24 characters (letters, numbers, underscores).
+                        </div>
+                    </div>
+
+                    <button id="username-submit-btn" class="nexa-btn nexa-btn-primary" type="button" disabled aria-label="Confirm Username">
+                        <span>Continue to Profile</span>
+                        <svg class="btn-arrow" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M4.16669 10H15.8334" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M10 4.16669L15.8334 10L10 15.8334" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="username-footer">
+                    <p>You can change or update your profile display settings anytime.</p>
+                </div>
+            </div>
+        </section>
     </main>
 
     <!-- Scripts -->
@@ -158,5 +205,6 @@
     <script src="js/splash.js" defer></script>
     <script src="js/welcome.js" defer></script>
     <script src="js/auth.js" defer></script>
+    <script src="js/username.js" defer></script>
 </body>
 </html>
