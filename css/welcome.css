@@ -1,1 +1,226 @@
+/* ==========================================================
+   MODULE 2: WELCOME SCREEN STYLES
+   ========================================================== */
+.welcome-screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--color-bg);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 24px;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.6s var(--transition-smooth), visibility 0.6s var(--transition-smooth);
+    z-index: 900;
+}
 
+.welcome-screen.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.welcome-screen.hidden {
+    display: none;
+}
+
+.welcome-container {
+    width: 100%;
+    max-width: 440px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    max-height: 720px;
+    padding: 12px 0;
+}
+
+/* Header & Logo */
+.welcome-brand {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.welcome-logo-box {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 71, 171, 0.2);
+}
+
+.welcome-logo-svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+    border-radius: 12px;
+}
+
+.welcome-badge {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-accent);
+    background-color: rgba(51, 153, 255, 0.1);
+    padding: 6px 12px;
+    border-radius: 99px;
+    border: 1px solid rgba(51, 153, 255, 0.2);
+}
+
+/* Hero Section */
+.welcome-hero {
+    margin: 32px 0;
+}
+
+.welcome-heading {
+    font-size: 2.75rem;
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    color: var(--color-text);
+    margin-bottom: 16px;
+}
+
+.text-gradient {
+    background: linear-gradient(135deg, var(--color-accent) 0%, #ffffff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.welcome-subtext {
+    font-size: 1rem;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.65);
+    font-weight: 400;
+}
+
+/* Feature Highlights */
+.welcome-features {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 32px;
+}
+
+.feature-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    padding: 14px 18px;
+    border-radius: var(--border-radius);
+    transition: background-color 0.3s var(--transition-smooth), border-color 0.3s var(--transition-smooth);
+}
+
+.feature-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(51, 153, 255, 0.3);
+}
+
+.feature-icon {
+    font-size: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: rgba(0, 71, 171, 0.2);
+    border-radius: 10px;
+}
+
+.feature-text h4 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: 2px;
+}
+
+.feature-text p {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* Actions Footer */
+.welcome-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.nexa-btn {
+    width: 100%;
+    height: 52px;
+    border-radius: var(--border-radius);
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    transition: transform 0.2s var(--transition-smooth), background-color 0.2s var(--transition-smooth), box-shadow 0.2s var(--transition-smooth);
+    border: none;
+    outline: none;
+}
+
+.nexa-btn-primary {
+    background-color: var(--color-primary);
+    color: var(--color-text);
+    box-shadow: 0 8px 24px rgba(0, 71, 171, 0.35);
+}
+
+.nexa-btn-primary:hover {
+    background-color: #0056D2;
+    box-shadow: 0 12px 32px rgba(0, 71, 171, 0.5);
+    transform: translateY(-1px);
+}
+
+.nexa-btn-primary:active {
+    transform: translateY(0);
+}
+
+.btn-arrow {
+    width: 18px;
+    height: 18px;
+    transition: transform 0.2s var(--transition-smooth);
+}
+
+.nexa-btn-primary:hover .btn-arrow {
+    transform: translateX(4px);
+}
+
+.welcome-terms {
+    text-align: center;
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.terms-link {
+    color: var(--color-accent);
+    text-decoration: none;
+    transition: opacity 0.2s;
+}
+
+.terms-link:hover {
+    opacity: 0.8;
+    text-decoration: underline;
+}
+
+/* Responsive adjustments */
+@media (max-height: 700px) {
+    .welcome-hero {
+        margin: 16px 0;
+    }
+    .welcome-heading {
+        font-size: 2.25rem;
+    }
+    .welcome-features {
+        margin-bottom: 16px;
+    }
+}
