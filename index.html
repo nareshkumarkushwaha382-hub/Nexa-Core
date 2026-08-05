@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="css/auth.css">
     <link rel="stylesheet" href="css/username.css">
     <link rel="stylesheet" href="css/profile.css">
+    <link rel="stylesheet" href="css/home.css">
 </head>
 <body>
     <!-- Root Application Container -->
@@ -198,7 +199,7 @@
             </div>
         </section>
 
-        <!-- Module 5: Profile Creation Screen Container (Hidden initially) -->
+        <!-- Module 5: Profile Creation Screen Container -->
         <section id="profile-screen" class="profile-screen hidden" aria-label="Create your Nexa profile" aria-hidden="true">
             <div class="profile-container">
                 <div class="profile-header">
@@ -207,7 +208,6 @@
                 </div>
 
                 <div class="profile-card">
-                    <!-- Avatar Preview & Edit -->
                     <div class="avatar-upload-wrapper">
                         <div class="avatar-preview-container">
                             <img id="profile-avatar-img" src="" alt="Profile Avatar Preview" class="avatar-img">
@@ -221,29 +221,16 @@
                         </div>
                     </div>
 
-                    <!-- Display Name Field -->
                     <div class="input-group">
                         <label for="display-name-input">Display Name</label>
                         <div class="input-wrapper">
-                            <input 
-                                type="text" 
-                                id="display-name-input" 
-                                placeholder="Your Name" 
-                                maxlength="40"
-                                autocomplete="name"
-                            >
+                            <input type="text" id="display-name-input" placeholder="Your Name" maxlength="40" autocomplete="name">
                         </div>
                     </div>
 
-                    <!-- Bio Field -->
                     <div class="input-group">
                         <label for="bio-input">Bio <span class="optional-tag">(Optional)</span></label>
-                        <textarea 
-                            id="bio-input" 
-                            placeholder="Connect without limits..." 
-                            maxlength="120"
-                            rows="2"
-                        ></textarea>
+                        <textarea id="bio-input" placeholder="Connect without limits..." maxlength="120" rows="2"></textarea>
                         <div class="char-counter" id="bio-counter">0 / 120</div>
                     </div>
 
@@ -257,6 +244,95 @@
                 </div>
             </div>
         </section>
+
+        <!-- Module 6: Home Screen Container (Hidden initially) -->
+        <section id="home-screen" class="home-screen hidden" aria-label="Nexa Home Dashboard" aria-hidden="true">
+            <div class="home-layout">
+                <!-- Sidebar Navigation (Desktop & Tablet) -->
+                <nav class="home-sidebar" aria-label="Main Navigation">
+                    <div class="sidebar-top">
+                        <div class="sidebar-logo" aria-hidden="true">
+                            <svg class="nexa-logo-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect width="100" height="100" rx="20" fill="url(#nexa-grad-h)" />
+                                <path d="M28 72V28L52 50L72 28V72" stroke="white" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M28 50H72" stroke="var(--color-secondary)" stroke-width="6" stroke-linecap="round" opacity="0.85"/>
+                                <defs>
+                                    <linearGradient id="nexa-grad-h" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+                                        <stop stop-color="#0052FF" />
+                                        <stop offset="1" stop-color="#002288" />
+                                    </linearGradient>
+                                </defs>
+                            </svg>
+                        </div>
+                        <div class="nav-links">
+                            <button class="nav-item active" data-tab="chats" aria-label="Chats" title="Chats">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                                <span class="nav-tooltip">Chats</span>
+                            </button>
+                            <button class="nav-item" data-tab="calls" aria-label="Calls" title="Calls">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                                <span class="nav-tooltip">Calls</span>
+                            </button>
+                            <button class="nav-item" data-tab="communities" aria-label="Communities" title="Communities">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                                <span class="nav-tooltip">Communities</span>
+                            </button>
+                            <button class="nav-item" data-tab="updates" aria-label="Updates" title="Updates">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+                                <span class="nav-tooltip">Updates</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="sidebar-bottom">
+                        <button class="nav-item" data-tab="settings" aria-label="Settings" title="Settings">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                            <span class="nav-tooltip">Settings</span>
+                        </button>
+                        <div id="home-user-avatar" class="sidebar-avatar" title="Signed in user">
+                            <img id="home-avatar-img" src="" alt="User profile">
+                        </div>
+                    </div>
+                </nav>
+
+                <!-- Primary Panel Content (Chats, Calls, etc.) -->
+                <aside class="home-panel" aria-label="Chats Panel">
+                    <div class="panel-header">
+                        <div class="panel-title-row">
+                            <h2 id="active-panel-title">Chats</h2>
+                            <div class="panel-actions">
+                                <button id="new-chat-btn" class="icon-btn" aria-label="New Chat" title="New Chat">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                </button>
+                                <button id="notification-btn" class="icon-btn" aria-label="Notifications" title="Notifications">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                                    <span class="notification-badge" aria-hidden="true"></span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="search-bar-wrapper">
+                            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                            <input type="text" id="home-search-input" placeholder="Search chats, messages, or people..." aria-label="Search">
+                        </div>
+                    </div>
+
+                    <!-- Chats List Container -->
+                    <div class="chats-list-container" id="chats-list" role="feed" aria-label="Conversation List">
+                        <!-- Dynamic mock conversation cards populated by home.js -->
+                    </div>
+                </aside>
+
+                <!-- Active Chat Area Placeholder (Readiness for Module 7) -->
+                <section class="home-chat-area" aria-label="Active Conversation View">
+                    <div class="empty-chat-state">
+                        <div class="empty-chat-icon" aria-hidden="true">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                        </div>
+                        <h3>Welcome to Nexa, <span id="welcome-display-name">Pioneer</span>!</h3>
+                        <p>Select a conversation from the sidebar or start a new chat to connect without limits.</p>
+                    </div>
+                </section>
+            </div>
+        </section>
     </main>
 
     <!-- Scripts -->
@@ -266,5 +342,6 @@
     <script src="js/auth.js" defer></script>
     <script src="js/username.js" defer></script>
     <script src="js/profile.js" defer></script>
+    <script src="js/home.js" defer></script>
 </body>
 </html>
