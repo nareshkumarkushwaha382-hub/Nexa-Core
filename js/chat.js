@@ -14,16 +14,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const scrollArea = document.getElementById('message-scroll-area');
     const activeChatRoomId = 'global_room';
 
-    function initializeChatListener(roomId) {
-        onChildAdded(ref(db, `chats/${roomId}/messages`), (snapshot) => {
-            const msgData = snapshot.val();
-            if (msgData) {
-                appendMessage(msgData.text, msgData.senderName);
-            }
-        });
-    }
-
-    initializeChatListener(activeChatRoomId);
+    onChildAdded(ref(db, `chats/${activeChatRoomId}/messages`), (snapshot) => {
+        const msgData = snapshot.val();
+        if (msgData) {
+            appendMessage(msgData.text, msgData.senderName);
+        }
+    });
 
     async function handleSendMessage() {
         const text = messageInput.value.trim();
