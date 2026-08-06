@@ -1,6 +1,6 @@
 /**
  * @file welcome.js
- * @description Transitions user from Welcome to Authentication screen and handles focus safely.
+ * @description Safe screen transition from Welcome to Auth.
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -12,16 +12,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (getStartedBtn) {
         getStartedBtn.addEventListener('click', () => {
-            // 1. Remove focus from the button to clear accessibility warnings
-            getStartedBtn.blur();
+            getStartedBtn.blur(); // Remove focus to clear accessibility warnings
 
-            // 2. Hide welcome screen and update accessibility attributes
             if (welcomeScreen) {
                 welcomeScreen.classList.add('hidden');
                 welcomeScreen.setAttribute('aria-hidden', 'true');
             }
 
-            // 3. Reveal auth screen and update accessibility attributes
             if (authScreen) {
                 authScreen.classList.remove('hidden');
                 authScreen.removeAttribute('aria-hidden');
