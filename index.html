@@ -19,10 +19,9 @@
     <link rel="stylesheet" href="css/settings.css">
 </head>
 <body>
-    <!-- Root Application Container -->
     <main id="app" role="main" aria-label="Nexa Application Root">
-        <!-- Module 1: Splash Screen Container -->
-        <section id="splash-screen" class="splash-screen" aria-label="Nexa Splash Screen" aria-live="polite">
+        <!-- Splash Screen -->
+        <section id="splash-screen" class="splash-screen" aria-label="Nexa Splash Screen">
             <div class="splash-content">
                 <div class="nexa-logo-container" aria-hidden="true">
                     <svg class="nexa-logo-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -39,17 +38,14 @@
                 </div>
                 <h1 class="splash-title">Nexa</h1>
                 <p class="splash-tagline">Connect Without Limits.</p>
-                
-                <div class="splash-loader" role="progressbar" aria-label="Loading application">
-                    <div class="loader-track">
-                        <div class="loader-thumb"></div>
-                    </div>
+                <div class="splash-loader" role="progressbar">
+                    <div class="loader-track"><div class="loader-thumb"></div></div>
                 </div>
             </div>
         </section>
 
-        <!-- Module 2: Welcome Screen Container -->
-        <section id="welcome-screen" class="welcome-screen hidden" aria-label="Welcome to Nexa" aria-hidden="true">
+        <!-- Welcome Screen -->
+        <section id="welcome-screen" class="welcome-screen hidden" aria-label="Welcome to Nexa">
             <div class="welcome-container">
                 <div class="welcome-brand">
                     <div class="welcome-logo-box" aria-hidden="true">
@@ -59,83 +55,38 @@
                             <path d="M28 50H72" stroke="var(--color-secondary)" stroke-width="6" stroke-linecap="round" opacity="0.85"/>
                             <defs>
                                 <linearGradient id="nexa-grad-w" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
-                                    <stop stop-color="#0052FF" />
-                                    <stop offset="1" stop-color="#002288" />
+                                    <stop stop-color="#0052FF" /><stop offset="1" stop-color="#002288" />
                                 </linearGradient>
                             </defs>
                         </svg>
                     </div>
                     <span class="welcome-badge">Version 1.0 Production</span>
                 </div>
-
                 <div class="welcome-hero">
                     <h2 class="welcome-heading">Connect Without<br><span class="text-gradient">Limits.</span></h2>
-                    <p class="welcome-subtext">Experience the world's most modern, secure, and lightning-fast messaging platform built for peak performance.</p>
+                    <p class="welcome-subtext">Experience the world's most modern, secure, and lightning-fast messaging platform.</p>
                 </div>
-
-                <div class="welcome-features">
-                    <div class="feature-item">
-                        <div class="feature-icon" aria-hidden="true">🔒</div>
-                        <div class="feature-text">
-                            <h4>End-to-End Encrypted</h4>
-                            <p>Absolute privacy for every conversation.</p>
-                        </div>
-                    </div>
-                    <div class="feature-item">
-                        <div class="feature-icon" aria-hidden="true">⚡</div>
-                        <div class="feature-text">
-                            <h4>Lightning Fast</h4>
-                            <p>Optimized architecture for zero lag.</p>
-                        </div>
-                    </div>
-                </div>
-
                 <div class="welcome-actions">
-                    <button id="get-started-btn" class="nexa-btn nexa-btn-primary" type="button" aria-label="Get Started with Nexa">
+                    <button id="get-started-btn" class="nexa-btn nexa-btn-primary" type="button">
                         <span>Get Started</span>
-                        <svg class="btn-arrow" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M4.16669 10H15.8334" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            <path d="M10 4.16669L15.8334 10L10 15.8334" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <svg class="btn-arrow" viewBox="0 0 20 20" fill="none" width="16" height="16">
+                            <path d="M4.16669 10H15.8334M10 4.16669L15.8334 10L10 15.8334" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                     </button>
-                    <p class="welcome-terms">
-                        By continuing, you agree to Nexa's <a href="#" class="terms-link">Security & Privacy Terms</a>.
-                    </p>
                 </div>
             </div>
         </section>
 
-        <!-- Module 3: Authentication Screen Container -->
-        <section id="auth-screen" class="auth-screen hidden" aria-label="Sign in to Nexa" aria-hidden="true">
+        <!-- Authentication Screen -->
+        <section id="auth-screen" class="auth-screen hidden" aria-label="Sign in to Nexa">
             <div class="auth-container">
                 <div class="auth-header">
-                    <div class="auth-logo-box" aria-hidden="true">
-                        <svg class="auth-logo-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <rect width="100" height="100" rx="22" fill="url(#nexa-grad-a)" />
-                            <path d="M28 72V28L52 50L72 28V72" stroke="white" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
-                            <path d="M28 50H72" stroke="var(--color-secondary)" stroke-width="6" stroke-linecap="round" opacity="0.85"/>
-                            <defs>
-                                <linearGradient id="nexa-grad-a" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
-                                    <stop stop-color="#0052FF" />
-                                    <stop offset="1" stop-color="#002288" />
-                                </linearGradient>
-                            </defs>
-                        </svg>
-                    </div>
                     <h2>Welcome to Nexa</h2>
                     <p>Secure authentication powered by Google & Firebase.</p>
                 </div>
-
                 <div class="auth-card">
-                    <div class="security-badge">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                        </svg>
-                        <span>Firebase Secure Cloud Session</span>
-                    </div>
-
-                    <button id="google-signin-btn" class="google-signin-btn" type="button" aria-label="Sign in with Google">
-                        <svg class="google-icon" viewBox="0 0 24 24" width="20" height="20" xmlns="http://www.w3.org/2000/svg">
+                    <button id="google-signin-btn" class="google-signin-btn" type="button">
+                        <svg class="google-icon" viewBox="0 0 24 24" width="20" height="20">
                             <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
                             <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
                             <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05"/>
@@ -143,8 +94,7 @@
                         </svg>
                         <span>Continue with Google</span>
                     </button>
-
-                    <div id="auth-loading" class="auth-loading hidden" aria-hidden="true">
+                    <div id="auth-loading" class="auth-loading hidden">
                         <div class="spinner"></div>
                         <span>Establishing secure connection...</span>
                     </div>
@@ -152,180 +102,107 @@
             </div>
         </section>
 
-        <!-- Module 4: Username Selection Screen Container -->
-        <section id="username-screen" class="username-screen hidden" aria-label="Choose your Nexa username" aria-hidden="true">
+        <!-- Username Selection Screen -->
+        <section id="username-screen" class="username-screen hidden" aria-label="Choose your Nexa username">
             <div class="username-container">
                 <div class="username-header">
                     <h2>Choose Your Identity</h2>
                     <p>Your unique username defines your handle across Nexa.</p>
                 </div>
-
                 <div class="username-card">
                     <div class="input-group">
                         <label for="username-input">Unique Username</label>
                         <div class="input-wrapper">
                             <span class="input-prefix" aria-hidden="true">@</span>
-                            <input 
-                                type="text" 
-                                id="username-input" 
-                                placeholder="pioneer" 
-                                autocomplete="off" 
-                                autocapitalize="off" 
-                                spellcheck="false"
-                                maxlength="24"
-                                aria-describedby="username-feedback"
-                            >
+                            <input type="text" id="username-input" placeholder="pioneer" autocomplete="off" maxlength="24">
                         </div>
-                        <div id="username-feedback" class="input-feedback" aria-live="polite">
-                            Use 3-24 characters (letters, numbers, underscores).
-                        </div>
+                        <div id="username-feedback" class="input-feedback">Use 3-24 lowercase letters, numbers, underscores.</div>
                     </div>
-
-                    <button id="username-submit-btn" class="nexa-btn nexa-btn-primary" type="button" disabled aria-label="Confirm Username">
-                        <span>Continue to Profile</span>
-                        <svg class="btn-arrow" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M4.16669 10H15.8334" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            <path d="M10 4.16669L15.8334 10L10 15.8334" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </button>
+                    <button id="username-submit-btn" class="nexa-btn nexa-btn-primary" type="button" disabled>Continue</button>
                 </div>
             </div>
         </section>
 
-        <!-- Module 5: Profile Creation Screen Container -->
-        <section id="profile-screen" class="profile-screen hidden" aria-label="Create your Nexa profile" aria-hidden="true">
+        <!-- Profile Creation Screen -->
+        <section id="profile-screen" class="profile-screen hidden" aria-label="Create your Nexa profile">
             <div class="profile-container">
                 <div class="profile-header">
                     <h2>Set Up Your Profile</h2>
-                    <p>Customize how you appear to your connections.</p>
+                    <p>Customize how you appear to connections.</p>
                 </div>
-
                 <div class="profile-card">
                     <div class="avatar-upload-wrapper">
-                        <div class="avatar-preview-container">
-                            <img id="profile-avatar-img" src="" alt="Profile Avatar Preview" class="avatar-img">
-                        </div>
-                        <div class="avatar-info">
-                            <span class="avatar-title">Profile Picture</span>
-                            <span class="avatar-subtitle">Imported securely from Google</span>
-                        </div>
+                        <img id="profile-avatar-img" src="" alt="Avatar" class="avatar-img">
                     </div>
-
                     <div class="input-group">
                         <label for="display-name-input">Display Name</label>
-                        <div class="input-wrapper">
-                            <input type="text" id="display-name-input" placeholder="Your Name" maxlength="40" autocomplete="name">
-                        </div>
+                        <input type="text" id="display-name-input" placeholder="Your Name" maxlength="40">
                     </div>
-
                     <div class="input-group">
-                        <label for="bio-input">Bio <span class="optional-tag">(Optional)</span></label>
+                        <label for="bio-input">Bio</label>
                         <textarea id="bio-input" placeholder="Connect without limits..." maxlength="120" rows="2"></textarea>
                     </div>
-
-                    <button id="profile-submit-btn" class="nexa-btn nexa-btn-primary" type="button" aria-label="Complete Profile">
-                        <span>Enter Nexa Home</span>
-                        <svg class="btn-arrow" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M4.16669 10H15.8334" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            <path d="M10 4.16669L15.8334 10L10 15.8334" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </button>
+                    <button id="profile-submit-btn" class="nexa-btn nexa-btn-primary" type="button">Enter Nexa Home</button>
                 </div>
             </div>
         </section>
 
-        <!-- Module 6, 7 & 8: Home Screen, Messaging & Settings Workspace Container -->
-        <section id="home-screen" class="home-screen hidden" aria-label="Nexa Home Dashboard" aria-hidden="true">
+        <!-- Home & Chat Workspace -->
+        <section id="home-screen" class="home-screen hidden" aria-label="Nexa Home">
             <div class="home-layout">
-                <!-- Sidebar Navigation -->
-                <nav class="home-sidebar" aria-label="Main Navigation">
+                <nav class="home-sidebar" aria-label="Navigation">
                     <div class="sidebar-top">
-                        <div class="sidebar-logo" aria-hidden="true">
-                            <svg class="nexa-logo-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <rect width="100" height="100" rx="20" fill="url(#nexa-grad-h)" />
-                                <path d="M28 72V28L52 50L72 28V72" stroke="white" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
-                                <path d="M28 50H72" stroke="var(--color-secondary)" stroke-width="6" stroke-linecap="round" opacity="0.85"/>
-                                <defs>
-                                    <linearGradient id="nexa-grad-h" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
-                                        <stop stop-color="#0052FF" />
-                                        <stop offset="1" stop-color="#002288" />
-                                    </linearGradient>
-                                </defs>
-                            </svg>
-                        </div>
                         <div class="nav-links">
-                            <button class="nav-item active" data-tab="chats" aria-label="Chats" title="Chats">
+                            <button class="nav-item active" data-tab="chats" title="Chats">
                                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                             </button>
-                            <button class="nav-item" data-tab="settings" aria-label="Settings" title="Settings">
+                            <button class="nav-item" data-tab="settings" title="Settings">
                                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06-.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
                             </button>
                         </div>
                     </div>
                 </nav>
 
-                <!-- Primary Panel -->
-                <aside class="home-panel" id="primary-home-panel" aria-label="Primary Panel">
-                    <div class="panel-header">
-                        <div class="panel-title-row">
-                            <h2 id="active-panel-title">Chats</h2>
-                        </div>
-                    </div>
-                    <div class="chats-list-container" id="chats-list" role="feed" aria-label="Conversation List">
+                <aside class="home-panel" id="primary-home-panel">
+                    <div class="panel-header"><h2>Chats</h2></div>
+                    <div class="chats-list-container" id="chats-list">
                         <div class="chat-item active">
                             <div class="chat-item-info">
                                 <h4>Global Secure Channel</h4>
-                                <p>Firebase cloud synchronized feed</p>
+                                <p>Firebase cloud sync active</p>
                             </div>
                         </div>
                     </div>
                 </aside>
 
-                <!-- Workspace Area -->
-                <section class="home-chat-area" id="workspace-area" aria-label="Workspace Area">
+                <section class="home-chat-area" id="workspace-area">
                     <div id="active-chat-container" class="active-chat-container">
                         <div class="chat-workspace-header">
                             <div class="chat-peer-info">
-                                <div class="chat-peer-details">
-                                    <h3 id="active-peer-name">Global Secure Channel</h3>
-                                    <span class="peer-status-text">firebase connected</span>
-                                </div>
+                                <h3>Global Secure Channel</h3>
+                                <span class="peer-status-text">firebase connected</span>
                             </div>
                         </div>
-
-                        <div class="e2ee-security-banner">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                            <span>Synced securely via Firebase Realtime Database.</span>
-                        </div>
-
-                        <div id="message-scroll-area" class="message-scroll-area" role="log" aria-label="Message History"></div>
-
+                        <div id="message-scroll-area" class="message-scroll-area" role="log"></div>
                         <div class="message-input-toolbar">
                             <div class="message-input-wrapper">
                                 <input type="text" id="message-text-input" placeholder="Type a secure message..." autocomplete="off">
                             </div>
-                            <button id="send-message-btn" class="send-btn" aria-label="Send Message">
+                            <button id="send-message-btn" class="send-btn" aria-label="Send">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
                             </button>
                         </div>
                     </div>
 
-                    <!-- Settings View -->
-                    <div id="settings-view" class="settings-view hidden" aria-label="Settings and Security View">
-                        <div class="settings-header">
-                            <h2>Settings & Security</h2>
-                            <p>Manage your Nexa account preferences and session.</p>
-                        </div>
+                    <div id="settings-view" class="settings-view hidden">
+                        <div class="settings-header"><h2>Settings</h2></div>
                         <div class="settings-scroll-area">
-                            <div class="settings-card profile-settings-card">
-                                <div class="settings-user-meta">
-                                    <h3 id="settings-display-name">Pioneer Name</h3>
-                                    <span id="settings-username-handle">@username</span>
-                                    <span id="settings-email-label">user@gmail.com</span>
-                                </div>
+                            <div class="settings-card">
+                                <h3 id="settings-display-name">Name</h3>
+                                <span id="settings-username-handle">@username</span>
                             </div>
-                            <div class="settings-card session-card">
-                                <button id="logout-btn" class="nexa-btn nexa-btn-danger" type="button">Sign Out of Nexa</button>
+                            <div class="settings-card">
+                                <button id="logout-btn" class="nexa-btn nexa-btn-danger" type="button">Sign Out</button>
                             </div>
                         </div>
                     </div>
@@ -334,7 +211,7 @@
         </section>
     </main>
 
-    <!-- Scripts (Modules as Type Module) -->
+    <!-- Scripts -->
     <script src="firebase-config.js" type="module"></script>
     <script src="js/app.js" type="module" defer></script>
     <script src="js/splash.js" type="module" defer></script>
