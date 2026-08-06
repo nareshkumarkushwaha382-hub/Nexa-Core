@@ -1,65 +1,58 @@
 /**
  * @file auth.js
- * @description Module 3 controller managing Google Sign-In authentication flow and secure token initialization.
+ * @description Firebase Authentication controller for Nexa Google Sign-In.
  */
+
+import { auth, db } from '../firebase-config.js';
+import { GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { ref, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
 document.addEventListener('DOMContentLoaded', () => {
     'use strict';
 
-    const authScreen = document.getElementById('auth-screen');
-    const googleSigninBtn = document.getElementById('google-signin-btn');
+    const googleSignInBtn = document.getElementById('google-signin-btn');
     const authLoading = document.getElementById('auth-loading');
+    const authScreen = document.getElementById('auth-screen');
+    const usernameScreen = document.getElementById('username-screen');
+    const homeScreen = document.getElementById('home-screen');
 
-    // Listen for Module 2 completion event dispatched by welcome.js
-    window.addEventListener('nexa:module2Complete', () => {
-        if (!authScreen) return;
+    if (googleSignInBtn) {
+        googleSignInBtn.addEventListener('click', async () => {
+            const provider = new GoogleAuthProvider();
+            try {
+                if (authLoading) authLoading.classList.remove('hidden');
+                googleSignInBtn.style.opacity = '0.5';
+                googleSignInBtn.style.pointerEvents = 'none';
 
-        authScreen.classList.remove('hidden');
-        void authScreen.offsetWidth; // Force reflow
-        authScreen.classList.add('active');
-        authScreen.setAttribute('aria-hidden', 'false');
+                const result = await signInWithPopup(auth, provider);
+                const user = result.user;
 
-        console.info('[Module 3] Authentication Screen successfully loaded and mounted.');
-    });
-
-    // Handle Google Sign-In interaction
-    if (googleSigninBtn) {
-        googleSigninBtn.addEventListener('click', () => {
-            console.info('[Module 3] Google Sign-In initiated...');
-
-            // Disable button and display secure loading indicator
-            googleSigninBtn.style.opacity = '0.6';
-            googleSigninBtn.style.pointerEvents = 'none';
-            authLoading.classList.remove('hidden');
-
-            // Simulate secure authentication handshake & credential exchange
-            window.setTimeout(() => {
-                // Mock authenticated Google user payload
-                const mockGoogleUser = {
-                    uid: 'nexa_sec_' + Math.random().toString(36).substring(2, 11),
-                    email: 'secure.user@gmail.com',
-                    displayName: 'Nexa Pioneer',
-                    photoURL: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
-                    authProvider: 'google.com'
-                };
-
-                // Store secure session state (Non plain-text storage compliance)
-                sessionStorage.setItem('nexa_auth_session', JSON.stringify(mockGoogleUser));
-                
-                console.info('[Module 3] Authentication successful. Session secured.', mockGoogleUser.uid);
-
-                // Fade out auth screen
-                authScreen.classList.remove('active');
-                authScreen.setAttribute('aria-hidden', 'true');
-
-                window.setTimeout(() => {
-                    authScreen.remove();
-
-                    // Dispatch custom event indicating Module 3 is finished, ready for Module 4 (Username Selection)
-                    window.dispatchEvent(new CustomEvent('nexa:module3Complete', { detail: mockGoogleUser }));
-                }, 600);
-
-            }, 1800); // Realistic network authentication delay
+                await checkUserProfileAndRedirect(user);
+            } catch (error) {
+                console.error('[Firebase Auth Error]', error.message);
+                alert(`Authentication failed: ${error.message}`);
+                if (authLoading) authLoading.classList.add('hidden');
+                googleSignInBtn.style.opacity = '1';
+                googleSignInBtn.style.pointerEvents = 'auto';
+            }
         });
+    }
+
+    async function checkUserProfileAndRedirect(user) {
+        const userRef = ref(db, `users/${user.uid}`);
+        const snapshot = await get(userRef);
+
+        authScreen.classList.add('hidden');
+
+        if (snapshot.exists() && snapshot.val().username) {
+            homeScreen.classList.remove('hidden');
+            window.dispatchEvent(new CustomEvent('nexa:userLoaded', { detail: snapshot.val() }));
+        } else {
+            usernameScreen.classList.remove('hidden');
+            window.sessionStorage.setItem('nexa_temp_uid', user.uid);
+            window.sessionStorage.setItem('nexa_temp_email', user.email || '');
+            window.sessionStorage.setItem('nexa_temp_photo', user.photoURL || '');
+            window.sessionStorage.setItem('nexa_temp_name', user.displayName || 'Pioneer');
+        }
     }
 });
