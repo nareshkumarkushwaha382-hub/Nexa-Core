@@ -1,6 +1,6 @@
 /**
  * @file auth.js
- * @description Firebase Authentication controller for Nexa Google Sign-In.
+ * @description Firebase Google Sign-In and profile validation controller.
  */
 
 import { auth, db } from '../firebase-config.js';
@@ -25,9 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 googleSignInBtn.style.pointerEvents = 'none';
 
                 const result = await signInWithPopup(auth, provider);
-                const user = result.user;
-
-                await checkUserProfileAndRedirect(user);
+                await checkUserProfileAndRedirect(result.user);
             } catch (error) {
                 console.error('[Firebase Auth Error]', error.message);
                 alert(`Authentication failed: ${error.message}`);
@@ -39,13 +37,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function checkUserProfileAndRedirect(user) {
-        const userRef = ref(db, `users/${user.uid}`);
-        const snapshot = await get(userRef);
-
+        const snapshot = await get(ref(db, `users/${user.uid}`));
         authScreen.classList.add('hidden');
 
         if (snapshot.exists() && snapshot.val().username) {
             homeScreen.classList.remove('hidden');
+            window.sessionStorage.setItem('nexa_chosen_username', snapshot.val().username);
             window.dispatchEvent(new CustomEvent('nexa:userLoaded', { detail: snapshot.val() }));
         } else {
             usernameScreen.classList.remove('hidden');
