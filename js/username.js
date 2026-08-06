@@ -1,6 +1,6 @@
 /**
  * @file username.js
- * @description Validates and reserves unique handles in Firebase Realtime Database.
+ * @description Unique handle checker and Firebase registration.
  */
 
 import { db } from '../firebase-config.js';
@@ -15,17 +15,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const usernameScreen = document.getElementById('username-screen');
     const profileScreen = document.getElementById('profile-screen');
 
-    let isUsernameAvailable = false;
+    let isAvailable = false;
 
     if (usernameInput) {
         usernameInput.addEventListener('input', async () => {
             const val = usernameInput.value.trim().toLowerCase();
-            
             if (val.length < 3 || val.length > 24 || !/^[a-z0-9_]+$/.test(val)) {
-                usernameFeedback.textContent = 'Use 3-24 characters (lowercase letters, numbers, underscores).';
+                usernameFeedback.textContent = 'Use 3-24 lowercase letters, numbers, underscores.';
                 usernameFeedback.style.color = 'rgba(255, 255, 255, 0.5)';
                 usernameSubmitBtn.disabled = true;
-                isUsernameAvailable = false;
+                isAvailable = false;
                 return;
             }
 
@@ -35,12 +34,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     usernameFeedback.textContent = `@${val} is already taken.`;
                     usernameFeedback.style.color = '#FF453A';
                     usernameSubmitBtn.disabled = true;
-                    isUsernameAvailable = false;
+                    isAvailable = false;
                 } else {
                     usernameFeedback.textContent = `@${val} is available!`;
                     usernameFeedback.style.color = '#34A853';
                     usernameSubmitBtn.disabled = false;
-                    isUsernameAvailable = true;
+                    isAvailable = true;
                 }
             } catch (err) {
                 console.error('[Firebase Error]', err);
@@ -50,15 +49,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (usernameSubmitBtn) {
         usernameSubmitBtn.addEventListener('click', async () => {
-            if (!isUsernameAvailable) return;
-
+            if (!isAvailable) return;
             const chosenUsername = usernameInput.value.trim().toLowerCase();
             const uid = window.sessionStorage.getItem('nexa_temp_uid');
 
             try {
                 await set(ref(db, `handles/${chosenUsername}`), uid);
                 window.sessionStorage.setItem('nexa_chosen_username', chosenUsername);
-
                 usernameScreen.classList.add('hidden');
                 profileScreen.classList.remove('hidden');
 
