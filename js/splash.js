@@ -10,7 +10,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const welcomeScreen = document.getElementById('welcome-screen');
 
     setTimeout(() => {
-        if (splashScreen) splashScreen.classList.add('hidden');
-        if (welcomeScreen) welcomeScreen.classList.remove('hidden');
-    }, 2000);
+        if (splashScreen) {
+            splashScreen.classList.add('hidden');
+        }
+        if (welcomeScreen) {
+            welcomeScreen.classList.remove('hidden');
+        }
+    }, 2000); // Transitions after 2 seconds
 });
