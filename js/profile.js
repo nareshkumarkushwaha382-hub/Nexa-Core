@@ -1,6 +1,6 @@
 /**
  * @file profile.js
- * @description Commits complete user profile data to Firebase Realtime Database.
+ * @description Saves user profile details to Firebase Realtime Database.
  */
 
 import { db } from '../firebase-config.js';
