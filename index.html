@@ -65,7 +65,7 @@
                             </defs>
                         </svg>
                     </div>
-                    <span class="welcome-badge">Version 0.1 Alpha</span>
+                    <span class="welcome-badge">Version 1.0 Production</span>
                 </div>
 
                 <div class="welcome-hero">
@@ -123,7 +123,7 @@
                         </svg>
                     </div>
                     <h2>Welcome to Nexa</h2>
-                    <p>Secure authentication powered by Google.</p>
+                    <p>Secure authentication powered by Google & Firebase.</p>
                 </div>
 
                 <div class="auth-card">
@@ -131,7 +131,7 @@
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
                             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
                         </svg>
-                        <span>End-to-End Encrypted Session</span>
+                        <span>Firebase Secure Cloud Session</span>
                     </div>
 
                     <button id="google-signin-btn" class="google-signin-btn" type="button" aria-label="Sign in with Google">
@@ -148,10 +148,6 @@
                         <div class="spinner"></div>
                         <span>Establishing secure connection...</span>
                     </div>
-                </div>
-
-                <div class="auth-footer">
-                    <p>Protected by reCAPTCHA and Subject to Nexa Privacy & Security Standards.</p>
                 </div>
             </div>
         </section>
@@ -179,7 +175,6 @@
                                 maxlength="24"
                                 aria-describedby="username-feedback"
                             >
-                            <div id="username-status-icon" class="status-icon hidden" aria-hidden="true"></div>
                         </div>
                         <div id="username-feedback" class="input-feedback" aria-live="polite">
                             Use 3-24 characters (letters, numbers, underscores).
@@ -193,10 +188,6 @@
                             <path d="M10 4.16669L15.8334 10L10 15.8334" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                     </button>
-                </div>
-
-                <div class="username-footer">
-                    <p>You can change or update your profile display settings anytime.</p>
                 </div>
             </div>
         </section>
@@ -213,9 +204,6 @@
                     <div class="avatar-upload-wrapper">
                         <div class="avatar-preview-container">
                             <img id="profile-avatar-img" src="" alt="Profile Avatar Preview" class="avatar-img">
-                            <div class="avatar-badge" aria-hidden="true">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-                            </div>
                         </div>
                         <div class="avatar-info">
                             <span class="avatar-title">Profile Picture</span>
@@ -233,7 +221,6 @@
                     <div class="input-group">
                         <label for="bio-input">Bio <span class="optional-tag">(Optional)</span></label>
                         <textarea id="bio-input" placeholder="Connect without limits..." maxlength="120" rows="2"></textarea>
-                        <div class="char-counter" id="bio-counter">0 / 120</div>
                     </div>
 
                     <button id="profile-submit-btn" class="nexa-btn nexa-btn-primary" type="button" aria-label="Complete Profile">
@@ -269,194 +256,76 @@
                         <div class="nav-links">
                             <button class="nav-item active" data-tab="chats" aria-label="Chats" title="Chats">
                                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                                <span class="nav-tooltip">Chats</span>
                             </button>
-                            <button class="nav-item" data-tab="calls" aria-label="Calls" title="Calls">
-                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-                                <span class="nav-tooltip">Calls</span>
+                            <button class="nav-item" data-tab="settings" aria-label="Settings" title="Settings">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06-.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
                             </button>
-                            <button class="nav-item" data-tab="communities" aria-label="Communities" title="Communities">
-                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                                <span class="nav-tooltip">Communities</span>
-                            </button>
-                            <button class="nav-item" data-tab="updates" aria-label="Updates" title="Updates">
-                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
-                                <span class="nav-tooltip">Updates</span>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="sidebar-bottom">
-                        <button class="nav-item" data-tab="settings" aria-label="Settings" title="Settings">
-                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06-.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-                            <span class="nav-tooltip">Settings</span>
-                        </button>
-                        <div id="home-user-avatar" class="sidebar-avatar" title="Signed in user">
-                            <img id="home-avatar-img" src="" alt="User profile">
                         </div>
                     </div>
                 </nav>
 
-                <!-- Primary Dynamic Panel (Chats or Settings) -->
+                <!-- Primary Panel -->
                 <aside class="home-panel" id="primary-home-panel" aria-label="Primary Panel">
                     <div class="panel-header">
                         <div class="panel-title-row">
                             <h2 id="active-panel-title">Chats</h2>
-                            <div class="panel-actions">
-                                <button id="new-chat-btn" class="icon-btn" aria-label="New Chat" title="New Chat">
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                                </button>
-                                <button id="notification-btn" class="icon-btn" aria-label="Notifications" title="Notifications">
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-                                    <span class="notification-badge" aria-hidden="true"></span>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="search-bar-wrapper">
-                            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                            <input type="text" id="home-search-input" placeholder="Search chats, messages, or people..." aria-label="Search">
                         </div>
                     </div>
-
                     <div class="chats-list-container" id="chats-list" role="feed" aria-label="Conversation List">
-                        <!-- Populated dynamically -->
+                        <div class="chat-item active">
+                            <div class="chat-item-info">
+                                <h4>Global Secure Channel</h4>
+                                <p>Firebase cloud synchronized feed</p>
+                            </div>
+                        </div>
                     </div>
                 </aside>
 
-                <!-- Module 8: Settings Workspace Container (Replaces Chat Area when Settings tab is active) -->
+                <!-- Workspace Area -->
                 <section class="home-chat-area" id="workspace-area" aria-label="Workspace Area">
-                    <!-- Default Initial Empty State for Chats -->
-                    <div id="empty-chat-state" class="empty-chat-state">
-                        <div class="empty-chat-icon" aria-hidden="true">
-                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                        </div>
-                        <h3>Welcome to Nexa, <span id="welcome-display-name">Pioneer</span>!</h3>
-                        <p>Select a conversation from the sidebar or start a new chat to connect without limits.</p>
-                    </div>
-
-                    <!-- Active Conversation Container (Module 7) -->
-                    <div id="active-chat-container" class="active-chat-container hidden">
-                        <!-- Chat Header -->
+                    <div id="active-chat-container" class="active-chat-container">
                         <div class="chat-workspace-header">
                             <div class="chat-peer-info">
-                                <div class="chat-peer-avatar">
-                                    <img id="active-peer-avatar" src="" alt="Contact avatar">
-                                    <div id="active-peer-status-dot" class="online-indicator"></div>
-                                </div>
                                 <div class="chat-peer-details">
-                                    <h3 id="active-peer-name">Contact Name</h3>
-                                    <span id="active-peer-status" class="peer-status-text">online</span>
+                                    <h3 id="active-peer-name">Global Secure Channel</h3>
+                                    <span class="peer-status-text">firebase connected</span>
                                 </div>
-                            </div>
-                            <div class="chat-workspace-actions">
-                                <button id="voice-call-btn" class="icon-btn" aria-label="Start Voice Call" title="Voice Call">
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-                                </button>
-                                <button id="video-call-btn" class="icon-btn" aria-label="Start Video Call" title="Video Call">
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
-                                </button>
-                                <button id="chat-menu-btn" class="icon-btn" aria-label="More Options" title="More Options">
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
-                                </button>
                             </div>
                         </div>
 
-                        <!-- E2EE Security Banner -->
                         <div class="e2ee-security-banner">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                            <span>Messages are end-to-end encrypted. No one outside of this chat can read them.</span>
+                            <span>Synced securely via Firebase Realtime Database.</span>
                         </div>
 
-                        <!-- Message History Scroll Area -->
                         <div id="message-scroll-area" class="message-scroll-area" role="log" aria-label="Message History"></div>
 
-                        <!-- Message Input Toolbar -->
                         <div class="message-input-toolbar">
-                            <button id="attachment-btn" class="icon-btn" aria-label="Attach File" title="Attach Media">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
-                            </button>
                             <div class="message-input-wrapper">
-                                <input type="text" id="message-text-input" placeholder="Type a secure message..." autocomplete="off" aria-label="Type a secure message">
-                                <button id="emoji-picker-btn" class="emoji-btn" aria-label="Emoji Picker" title="Emojis">😊</button>
+                                <input type="text" id="message-text-input" placeholder="Type a secure message..." autocomplete="off">
                             </div>
-                            <button id="send-message-btn" class="send-btn" aria-label="Send Message" title="Send Message">
+                            <button id="send-message-btn" class="send-btn" aria-label="Send Message">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
                             </button>
                         </div>
                     </div>
 
-                    <!-- Module 8: Settings Workspace View -->
+                    <!-- Settings View -->
                     <div id="settings-view" class="settings-view hidden" aria-label="Settings and Security View">
                         <div class="settings-header">
                             <h2>Settings & Security</h2>
-                            <p>Manage your Nexa account preferences, cryptographic keys, and device sessions.</p>
+                            <p>Manage your Nexa account preferences and session.</p>
                         </div>
-
                         <div class="settings-scroll-area">
-                            <!-- User Account Overview Card -->
                             <div class="settings-card profile-settings-card">
-                                <div class="settings-avatar-wrapper">
-                                    <img id="settings-avatar-img" src="" alt="User Avatar">
-                                </div>
                                 <div class="settings-user-meta">
                                     <h3 id="settings-display-name">Pioneer Name</h3>
                                     <span id="settings-username-handle">@username</span>
                                     <span id="settings-email-label">user@gmail.com</span>
                                 </div>
                             </div>
-
-                            <!-- Cryptographic E2EE Keys Section -->
-                            <div class="settings-section-block">
-                                <h4>End-to-End Encryption</h4>
-                                <div class="settings-card security-card">
-                                    <div class="security-key-info">
-                                        <div class="key-icon-box">
-                                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.778-7.778zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
-                                        </div>
-                                        <div>
-                                            <h5>Device Public Key Fingerprint</h5>
-                                            <code id="key-fingerprint-code">4f82:9b11:c37e:88a2:10fa:44de:39bc:012f</code>
-                                        </div>
-                                    </div>
-                                    <button id="verify-keys-btn" class="nexa-btn nexa-btn-secondary" type="button">Verify Security Keys</button>
-                                </div>
-                            </div>
-
-                            <!-- Preferences & Customization Section -->
-                            <div class="settings-section-block">
-                                <h4>Preferences</h4>
-                                <div class="settings-card preferences-card">
-                                    <div class="pref-toggle-row">
-                                        <div class="pref-text">
-                                            <h5>Dark Theme Accent</h5>
-                                            <p>Optimized OLED deep dark mode</p>
-                                        </div>
-                                        <label class="toggle-switch">
-                                            <input type="checkbox" id="dark-theme-toggle" checked>
-                                            <span class="slider"></span>
-                                        </label>
-                                    </div>
-                                    <div class="pref-toggle-row">
-                                        <div class="pref-text">
-                                            <h5>Read Receipts</h5>
-                                            <p>Let others know when you have read messages</p>
-                                        </div>
-                                        <label class="toggle-switch">
-                                            <input type="checkbox" id="read-receipts-toggle" checked>
-                                            <span class="slider"></span>
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Session Control Section -->
-                            <div class="settings-section-block">
-                                <h4>Session Control</h4>
-                                <div class="settings-card session-card">
-                                    <button id="logout-btn" class="nexa-btn nexa-btn-danger" type="button">
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-                                        <span>Sign Out of Nexa</span>
-                                    </button>
-                                </div>
+                            <div class="settings-card session-card">
+                                <button id="logout-btn" class="nexa-btn nexa-btn-danger" type="button">Sign Out of Nexa</button>
                             </div>
                         </div>
                     </div>
@@ -465,15 +334,16 @@
         </section>
     </main>
 
-    <!-- Scripts -->
-    <script src="js/app.js" defer></script>
-    <script src="js/splash.js" defer></script>
-    <script src="js/welcome.js" defer></script>
-    <script src="js/auth.js" defer></script>
-    <script src="js/username.js" defer></script>
-    <script src="js/profile.js" defer></script>
-    <script src="js/home.js" defer></script>
-    <script src="js/chat.js" defer></script>
-    <script src="js/settings.js" defer></script>
+    <!-- Scripts (Modules as Type Module) -->
+    <script src="firebase-config.js" type="module"></script>
+    <script src="js/app.js" type="module" defer></script>
+    <script src="js/splash.js" type="module" defer></script>
+    <script src="js/welcome.js" type="module" defer></script>
+    <script src="js/auth.js" type="module" defer></script>
+    <script src="js/username.js" type="module" defer></script>
+    <script src="js/profile.js" type="module" defer></script>
+    <script src="js/home.js" type="module" defer></script>
+    <script src="js/chat.js" type="module" defer></script>
+    <script src="js/settings.js" type="module" defer></script>
 </body>
 </html>
