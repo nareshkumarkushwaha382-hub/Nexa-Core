@@ -1,6 +1,6 @@
 /**
  * @file firebase-config.js
- * @description Firebase initialization module using modular SDK v10+/v12+
+ * @description Firebase initialization module configured with your live RTDB URL.
  */
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -9,10 +9,10 @@ import { getDatabase } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-
 
 const firebaseConfig = {
     apiKey: "YOUR_FIREBASE_API_KEY",
-    authDomain: "your-app.firebaseapp.com",
-    databaseURL: "https://your-app-default-rtdb.firebaseio.com",
-    projectId: "your-app",
-    storageBucket: "your-app.appspot.com",
+    authDomain: "nexa-core-bb617.firebaseapp.com",
+    databaseURL: "https://nexa-core-bb617-default-rtdb.asia-southeast1.firebasedatabase.app/",
+    projectId: "nexa-core-bb617",
+    storageBucket: "nexa-core-bb617.appspot.com",
     messagingSenderId: "YOUR_SENDER_ID",
     appId: "YOUR_APP_ID"
 };
