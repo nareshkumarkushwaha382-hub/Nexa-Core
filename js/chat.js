@@ -1,6 +1,6 @@
 /**
  * @file chat.js
- * @description Real-time chat controller using Firebase Realtime Database.
+ * @description Real-time messaging controller.
  */
 
 import { db } from '../firebase-config.js';
@@ -22,6 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     async function handleSendMessage() {
+        if (!messageInput) return;
         const text = messageInput.value.trim();
         if (!text) return;
 
@@ -36,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
             messageInput.value = '';
             messageInput.focus();
         } catch (err) {
-            console.error('[Firebase Chat Error]', err);
+            console.error('[Chat Send Error]', err);
         }
     }
 
