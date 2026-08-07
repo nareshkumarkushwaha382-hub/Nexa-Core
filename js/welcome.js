@@ -1,6 +1,6 @@
 /**
  * @file welcome.js
- * @description Safe screen transition from Welcome to Auth.
+ * @description Welcome screen action handler.
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -12,17 +12,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (getStartedBtn) {
         getStartedBtn.addEventListener('click', () => {
-            getStartedBtn.blur(); // Remove focus to clear accessibility warnings
-
-            if (welcomeScreen) {
-                welcomeScreen.classList.add('hidden');
-                welcomeScreen.setAttribute('aria-hidden', 'true');
-            }
-
-            if (authScreen) {
-                authScreen.classList.remove('hidden');
-                authScreen.removeAttribute('aria-hidden');
-            }
+            getStartedBtn.blur();
+            if (welcomeScreen) welcomeScreen.classList.add('hidden');
+            if (authScreen) authScreen.classList.remove('hidden');
         });
     }
 });
