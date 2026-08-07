@@ -1,6 +1,6 @@
 /**
  * @file profile.js
- * @description Saves user profile details to Firebase Realtime Database.
+ * @description Profile creation controller.
  */
 
 import { db } from '../firebase-config.js';
@@ -28,11 +28,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
             try {
                 await set(ref(db, `users/${uid}`), userProfile);
-                profileScreen.classList.add('hidden');
-                homeScreen.classList.remove('hidden');
+                if (profileScreen) profileScreen.classList.add('hidden');
+                if (homeScreen) homeScreen.classList.remove('hidden');
                 window.dispatchEvent(new CustomEvent('nexa:userLoaded', { detail: userProfile }));
             } catch (err) {
-                console.error('[Firebase Profile Error]', err);
+                console.error('[Profile Save Error]', err);
             }
         });
     }
