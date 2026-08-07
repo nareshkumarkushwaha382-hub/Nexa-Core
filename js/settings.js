@@ -1,6 +1,6 @@
 /**
  * @file settings.js
- * @description Handles session termination and sign out.
+ * @description Session termination controller.
  */
 
 import { auth } from '../firebase-config.js';
