@@ -1,6 +1,6 @@
 /**
  * @file home.js
- * @description Manages dashboard navigation tabs and UI bindings.
+ * @description Dashboard navigation controller.
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -18,13 +18,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const tab = item.getAttribute('data-tab');
             if (tab === 'chats') {
-                primaryPanel.classList.remove('hidden');
-                activeChatContainer.classList.remove('hidden');
-                settingsView.classList.add('hidden');
+                if (primaryPanel) primaryPanel.classList.remove('hidden');
+                if (activeChatContainer) activeChatContainer.classList.remove('hidden');
+                if (settingsView) settingsView.classList.add('hidden');
             } else if (tab === 'settings') {
-                primaryPanel.classList.add('hidden');
-                activeChatContainer.classList.add('hidden');
-                settingsView.classList.remove('hidden');
+                if (primaryPanel) primaryPanel.classList.add('hidden');
+                if (activeChatContainer) activeChatContainer.classList.add('hidden');
+                if (settingsView) settingsView.classList.remove('hidden');
             }
         });
     });
