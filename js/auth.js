@@ -1,10 +1,10 @@
 /**
  * @file auth.js
- * @description Firebase Google Sign-In and profile validation controller.
+ * @description Google Authentication controller.
  */
 
 import { auth, db } from '../firebase-config.js';
-import { GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import { ref, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -12,8 +12,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const googleSignInBtn = document.getElementById('google-signin-btn');
     const authLoading = document.getElementById('auth-loading');
+    const splashScreen = document.getElementById('splash-screen');
     const authScreen = document.getElementById('auth-screen');
     const usernameScreen = document.getElementById('username-screen');
+    const profileScreen = document.getElementById('profile-screen');
     const homeScreen = document.getElementById('home-screen');
 
     if (googleSignInBtn) {
@@ -24,11 +26,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 googleSignInBtn.style.opacity = '0.5';
                 googleSignInBtn.style.pointerEvents = 'none';
 
-                const result = await signInWithPopup(auth, provider);
-                await checkUserProfileAndRedirect(result.user);
+                await signInWithPopup(auth, provider);
             } catch (error) {
-                console.error('[Firebase Auth Error]', error.message);
-                alert(`Authentication failed: ${error.message}`);
+                console.error('[Auth Error]', error.message);
                 if (authLoading) authLoading.classList.add('hidden');
                 googleSignInBtn.style.opacity = '1';
                 googleSignInBtn.style.pointerEvents = 'auto';
@@ -36,20 +36,28 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    async function checkUserProfileAndRedirect(user) {
-        const snapshot = await get(ref(db, `users/${user.uid}`));
-        authScreen.classList.add('hidden');
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            if (splashScreen) splashScreen.classList.add('hidden');
+            if (authScreen) authScreen.classList.add('hidden');
 
-        if (snapshot.exists() && snapshot.val().username) {
-            homeScreen.classList.remove('hidden');
-            window.sessionStorage.setItem('nexa_chosen_username', snapshot.val().username);
-            window.dispatchEvent(new CustomEvent('nexa:userLoaded', { detail: snapshot.val() }));
-        } else {
-            usernameScreen.classList.remove('hidden');
-            window.sessionStorage.setItem('nexa_temp_uid', user.uid);
-            window.sessionStorage.setItem('nexa_temp_email', user.email || '');
-            window.sessionStorage.setItem('nexa_temp_photo', user.photoURL || '');
-            window.sessionStorage.setItem('nexa_temp_name', user.displayName || 'Pioneer');
+            try {
+                const snapshot = await get(ref(db, `users/${user.uid}`));
+                if (snapshot.exists() && snapshot.val().username) {
+                    const userData = snapshot.val();
+                    if (homeScreen) homeScreen.classList.remove('hidden');
+                    window.sessionStorage.setItem('nexa_chosen_username', userData.username);
+                    window.dispatchEvent(new CustomEvent('nexa:userLoaded', { detail: userData }));
+                } else {
+                    if (usernameScreen) usernameScreen.classList.remove('hidden');
+                    window.sessionStorage.setItem('nexa_temp_uid', user.uid);
+                    window.sessionStorage.setItem('nexa_temp_email', user.email || '');
+                    window.sessionStorage.setItem('nexa_temp_photo', user.photoURL || '');
+                    window.sessionStorage.setItem('nexa_temp_name', user.displayName || 'Pioneer');
+                }
+            } catch (err) {
+                console.error('[Database Read Error]', err);
+            }
         }
-    }
+    });
 });
