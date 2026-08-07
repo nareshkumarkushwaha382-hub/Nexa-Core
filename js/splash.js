@@ -1,6 +1,6 @@
 /**
  * @file splash.js
- * @description Handles splash screen display timing and transition to Welcome screen.
+ * @description Splash screen timing control.
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -10,11 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const welcomeScreen = document.getElementById('welcome-screen');
 
     setTimeout(() => {
-        if (splashScreen) {
-            splashScreen.classList.add('hidden');
-        }
-        if (welcomeScreen) {
-            welcomeScreen.classList.remove('hidden');
-        }
-    }, 2000); // Transitions after 2 seconds
+        if (splashScreen) splashScreen.classList.add('hidden');
+        if (welcomeScreen) welcomeScreen.classList.remove('hidden');
+    }, 1500);
 });
