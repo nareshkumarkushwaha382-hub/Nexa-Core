@@ -1,6 +1,6 @@
 /**
  * @file username.js
- * @description Unique handle checker and Firebase registration.
+ * @description Unique handle reservation controller.
  */
 
 import { db } from '../firebase-config.js';
@@ -21,9 +21,11 @@ document.addEventListener('DOMContentLoaded', () => {
         usernameInput.addEventListener('input', async () => {
             const val = usernameInput.value.trim().toLowerCase();
             if (val.length < 3 || val.length > 24 || !/^[a-z0-9_]+$/.test(val)) {
-                usernameFeedback.textContent = 'Use 3-24 lowercase letters, numbers, underscores.';
-                usernameFeedback.style.color = 'rgba(255, 255, 255, 0.5)';
-                usernameSubmitBtn.disabled = true;
+                if (usernameFeedback) {
+                    usernameFeedback.textContent = 'Use 3-24 lowercase letters, numbers, underscores.';
+                    usernameFeedback.style.color = 'rgba(255, 255, 255, 0.5)';
+                }
+                if (usernameSubmitBtn) usernameSubmitBtn.disabled = true;
                 isAvailable = false;
                 return;
             }
@@ -31,18 +33,22 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 const snapshot = await get(ref(db, `handles/${val}`));
                 if (snapshot.exists()) {
-                    usernameFeedback.textContent = `@${val} is already taken.`;
-                    usernameFeedback.style.color = '#FF453A';
-                    usernameSubmitBtn.disabled = true;
+                    if (usernameFeedback) {
+                        usernameFeedback.textContent = `@${val} is already taken.`;
+                        usernameFeedback.style.color = '#FF453A';
+                    }
+                    if (usernameSubmitBtn) usernameSubmitBtn.disabled = true;
                     isAvailable = false;
                 } else {
-                    usernameFeedback.textContent = `@${val} is available!`;
-                    usernameFeedback.style.color = '#34A853';
-                    usernameSubmitBtn.disabled = false;
+                    if (usernameFeedback) {
+                        usernameFeedback.textContent = `@${val} is available!`;
+                        usernameFeedback.style.color = '#34A853';
+                    }
+                    if (usernameSubmitBtn) usernameSubmitBtn.disabled = false;
                     isAvailable = true;
                 }
             } catch (err) {
-                console.error('[Firebase Error]', err);
+                console.error('[Handle Check Error]', err);
             }
         });
     }
@@ -56,15 +62,15 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 await set(ref(db, `handles/${chosenUsername}`), uid);
                 window.sessionStorage.setItem('nexa_chosen_username', chosenUsername);
-                usernameScreen.classList.add('hidden');
-                profileScreen.classList.remove('hidden');
+                if (usernameScreen) usernameScreen.classList.add('hidden');
+                if (profileScreen) profileScreen.classList.remove('hidden');
 
                 const displayNameInput = document.getElementById('display-name-input');
                 const avatarImg = document.getElementById('profile-avatar-img');
                 if (displayNameInput) displayNameInput.value = window.sessionStorage.getItem('nexa_temp_name') || '';
                 if (avatarImg) avatarImg.src = window.sessionStorage.getItem('nexa_temp_photo') || '';
             } catch (err) {
-                console.error('[Firebase Error]', err);
+                console.error('[Handle Save Error]', err);
             }
         });
     }
