@@ -1,10 +1,9 @@
 /**
  * @file profile.js
- * @description Profile creation controller.
+ * @description Saves user profile details to Supabase Postgres.
  */
 
-import { db } from '../firebase-config.js';
-import { ref, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+import { supabase } from '../supabase-config.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     'use strict';
@@ -17,22 +16,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (profileSubmitBtn) {
         profileSubmitBtn.addEventListener('click', async () => {
-            const uid = window.sessionStorage.getItem('nexa_temp_uid');
+            const id = window.sessionStorage.getItem('nexa_temp_uid');
             const username = window.sessionStorage.getItem('nexa_chosen_username');
-            const email = window.sessionStorage.getItem('nexa_temp_email') || '';
-            const avatar = window.sessionStorage.getItem('nexa_temp_photo') || '';
-            const displayName = displayNameInput ? displayNameInput.value.trim() : 'Pioneer';
+            const avatar_url = window.sessionStorage.getItem('nexa_temp_photo') || '';
+            const display_name = displayNameInput ? displayNameInput.value.trim() : 'Pioneer';
             const bio = bioInput ? bioInput.value.trim() : '';
 
-            const userProfile = { uid, username, email, avatar, displayName, bio, createdAt: Date.now() };
+            const userProfile = { id, username, display_name, bio, avatar_url };
 
             try {
-                await set(ref(db, `users/${uid}`), userProfile);
+                const { error } = await supabase.from('profiles').upsert(userProfile);
+                if (error) throw error;
+
                 if (profileScreen) profileScreen.classList.add('hidden');
                 if (homeScreen) homeScreen.classList.remove('hidden');
                 window.dispatchEvent(new CustomEvent('nexa:userLoaded', { detail: userProfile }));
             } catch (err) {
-                console.error('[Profile Save Error]', err);
+                console.error('[Profile Save Error]', err.message);
+                alert(`Error saving profile: ${err.message}`);
             }
         });
     }
