@@ -3,7 +3,7 @@
  * @description Unique handle validation via Supabase database.
  */
 
-import { supabase } from '../supabase-config.js';
+import { supabase } from '/Nexa-Core/supabase-config.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     'use strict';
