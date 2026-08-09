@@ -1,20 +1,26 @@
 /**
  * @file splash.js
- * @description Handles splash screen timing control and transition to Welcome screen.
+ * @description Immediate execution splash screen controller.
  */
 
-document.addEventListener('DOMContentLoaded', () => {
+(function () {
     'use strict';
 
-    const splashScreen = document.getElementById('splash-screen');
-    const welcomeScreen = document.getElementById('welcome-screen');
+    function hideSplash() {
+        const splashScreen = document.getElementById('splash-screen');
+        const welcomeScreen = document.getElementById('welcome-screen');
 
-    setTimeout(() => {
         if (splashScreen) {
             splashScreen.classList.add('hidden');
         }
         if (welcomeScreen) {
             welcomeScreen.classList.remove('hidden');
         }
-    }, 1500); // 1.5 seconds delay before transitioning
-});
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', hideSplash);
+    } else {
+        setTimeout(hideSplash, 1200); // Triggers even if DOM is already loaded
+    }
+})();
