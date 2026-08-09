@@ -3,7 +3,7 @@
  * @description Real-time chat via Supabase Realtime Channels.
  */
 
-import { supabase } from '/Nexa-Core/supabase.js';
+import { supabase } from '/Nexa-Core/supabase-config.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     'use strict';
