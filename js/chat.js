@@ -3,7 +3,7 @@
  * @description Real-time chat via Supabase Realtime Channels.
  */
 
-import { supabase } from '../supabase-config.js';
+import { supabase } from '../supabase.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     'use strict';
@@ -13,38 +13,40 @@ document.addEventListener('DOMContentLoaded', () => {
     const scrollArea = document.getElementById('message-scroll-area');
     const activeRoomId = 'global_room';
 
-    // 1. Fetch initial existing messages
-    async function loadInitialMessages() {
+    async function initChat() {
+        // 1. Double-check that a user session exists before opening sockets
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) return; // Exit quietly if not logged in yet
+
+        // 2. Fetch initial existing messages
         const { data, error } = await supabase
             .from('messages')
             .select('*')
             .eq('room_id', activeRoomId)
             .order('created_at', { ascending: true });
 
-        if (!error && data) {
+        if (!error && data && scrollArea) {
             scrollArea.innerHTML = '';
             data.forEach(msg => appendMessage(msg.text, msg.sender_name));
         }
+
+        // 3. Subscribe to real-time incoming messages safely
+        supabase
+            .channel('public:messages')
+            .on('postgres_changes', {
+                event: 'INSERT',
+                schema: 'public',
+                table: 'messages',
+                filter: `room_id=eq.${activeRoomId}`
+            }, payload => {
+                const newMsg = payload.new;
+                if (newMsg) {
+                    appendMessage(newMsg.text, newMsg.sender_name);
+                }
+            })
+            .subscribe();
     }
-    loadInitialMessages();
 
-    // 2. Subscribe to real-time incoming messages
-    supabase
-        .channel('public:messages')
-        .on('postgres_changes', {
-            event: 'INSERT',
-            schema: 'public',
-            table: 'messages',
-            filter: `room_id=eq.${activeRoomId}`
-        }, payload => {
-            const newMsg = payload.new;
-            if (newMsg) {
-                appendMessage(newMsg.text, newMsg.sender_name);
-            }
-        })
-        .subscribe();
-
-    // 3. Send message handler
     async function handleSendMessage() {
         if (!messageInput) return;
         const text = messageInput.value.trim();
@@ -95,4 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    // Initialize chat session check
+    initChat();
 });
