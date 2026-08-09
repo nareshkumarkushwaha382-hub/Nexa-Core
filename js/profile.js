@@ -3,7 +3,7 @@
  * @description Saves user profile details to Supabase Postgres.
  */
 
-import { supabase } from '../supabase-config.js';
+import { supabase } from '/Nexa-Core/supabase-config.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     'use strict';
