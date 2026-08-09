@@ -1,10 +1,9 @@
 /**
  * @file username.js
- * @description Unique handle reservation controller.
+ * @description Unique handle validation via Supabase database.
  */
 
-import { db } from '../firebase-config.js';
-import { ref, get, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+import { supabase } from '../supabase-config.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     'use strict';
@@ -31,8 +30,13 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             try {
-                const snapshot = await get(ref(db, `handles/${val}`));
-                if (snapshot.exists()) {
+                const { data, error } = await supabase
+                    .from('profiles')
+                    .select('username')
+                    .eq('username', val)
+                    .maybeSingle();
+
+                if (data) {
                     if (usernameFeedback) {
                         usernameFeedback.textContent = `@${val} is already taken.`;
                         usernameFeedback.style.color = '#FF453A';
@@ -54,24 +58,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (usernameSubmitBtn) {
-        usernameSubmitBtn.addEventListener('click', async () => {
+        usernameSubmitBtn.addEventListener('click', () => {
             if (!isAvailable) return;
             const chosenUsername = usernameInput.value.trim().toLowerCase();
-            const uid = window.sessionStorage.getItem('nexa_temp_uid');
+            window.sessionStorage.setItem('nexa_chosen_username', chosenUsername);
+            
+            if (usernameScreen) usernameScreen.classList.add('hidden');
+            if (profileScreen) profileScreen.classList.remove('hidden');
 
-            try {
-                await set(ref(db, `handles/${chosenUsername}`), uid);
-                window.sessionStorage.setItem('nexa_chosen_username', chosenUsername);
-                if (usernameScreen) usernameScreen.classList.add('hidden');
-                if (profileScreen) profileScreen.classList.remove('hidden');
-
-                const displayNameInput = document.getElementById('display-name-input');
-                const avatarImg = document.getElementById('profile-avatar-img');
-                if (displayNameInput) displayNameInput.value = window.sessionStorage.getItem('nexa_temp_name') || '';
-                if (avatarImg) avatarImg.src = window.sessionStorage.getItem('nexa_temp_photo') || '';
-            } catch (err) {
-                console.error('[Handle Save Error]', err);
-            }
+            const displayNameInput = document.getElementById('display-name-input');
+            const avatarImg = document.getElementById('profile-avatar-img');
+            if (displayNameInput) displayNameInput.value = window.sessionStorage.getItem('nexa_temp_name') || '';
+            if (avatarImg) avatarImg.src = window.sessionStorage.getItem('nexa_temp_photo') || '';
         });
     }
 });
