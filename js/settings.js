@@ -1,10 +1,9 @@
 /**
  * @file settings.js
- * @description Session termination controller.
+ * @description Supabase sign out controller.
  */
 
-import { auth } from '../firebase-config.js';
-import { signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { supabase } from '../supabase-config.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     'use strict';
@@ -14,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (logoutBtn) {
         logoutBtn.addEventListener('click', async () => {
             try {
-                await signOut(auth);
+                await supabase.auth.signOut();
                 window.sessionStorage.clear();
                 location.reload();
             } catch (err) {
