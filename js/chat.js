@@ -1,10 +1,9 @@
 /**
  * @file chat.js
- * @description Real-time messaging controller.
+ * @description Real-time chat via Supabase Realtime Channels.
  */
 
-import { db } from '../firebase-config.js';
-import { ref, push, onChildAdded, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+import { supabase } from '../supabase-config.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     'use strict';
@@ -12,15 +11,40 @@ document.addEventListener('DOMContentLoaded', () => {
     const messageInput = document.getElementById('message-text-input');
     const sendBtn = document.getElementById('send-message-btn');
     const scrollArea = document.getElementById('message-scroll-area');
-    const activeChatRoomId = 'global_room';
+    const activeRoomId = 'global_room';
 
-    onChildAdded(ref(db, `chats/${activeChatRoomId}/messages`), (snapshot) => {
-        const msgData = snapshot.val();
-        if (msgData) {
-            appendMessage(msgData.text, msgData.senderName);
+    // 1. Fetch initial existing messages
+    async function loadInitialMessages() {
+        const { data, error } = await supabase
+            .from('messages')
+            .select('*')
+            .eq('room_id', activeRoomId)
+            .order('created_at', { ascending: true });
+
+        if (!error && data) {
+            scrollArea.innerHTML = '';
+            data.forEach(msg => appendMessage(msg.text, msg.sender_name));
         }
-    });
+    }
+    loadInitialMessages();
 
+    // 2. Subscribe to real-time incoming messages
+    supabase
+        .channel('public:messages')
+        .on('postgres_changes', {
+            event: 'INSERT',
+            schema: 'public',
+            table: 'messages',
+            filter: `room_id=eq.${activeRoomId}`
+        }, payload => {
+            const newMsg = payload.new;
+            if (newMsg) {
+                appendMessage(newMsg.text, newMsg.sender_name);
+            }
+        })
+        .subscribe();
+
+    // 3. Send message handler
     async function handleSendMessage() {
         if (!messageInput) return;
         const text = messageInput.value.trim();
@@ -29,15 +53,17 @@ document.addEventListener('DOMContentLoaded', () => {
         const senderName = window.sessionStorage.getItem('nexa_chosen_username') || 'Pioneer';
 
         try {
-            await push(ref(db, `chats/${activeChatRoomId}/messages`), {
-                text: text,
-                senderName: senderName,
-                timestamp: serverTimestamp()
+            const { error } = await supabase.from('messages').insert({
+                room_id: activeRoomId,
+                sender_name: senderName,
+                text: text
             });
+
+            if (error) throw error;
             messageInput.value = '';
             messageInput.focus();
         } catch (err) {
-            console.error('[Chat Send Error]', err);
+            console.error('[Chat Send Error]', err.message);
         }
     }
 
