@@ -1,23 +1,24 @@
-/* ==========================================================
-   MODULE 1: SPLASH SCREEN STYLES
-   ========================================================== */
+/**
+ * @file splash.css
+ * @description Styles for the Nexa splash loading screen.
+ */
+
 .splash-screen {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: var(--color-bg);
+    width: 100vw;
+    height: 100vh;
+    background-color: #0f1117; /* Sleek dark theme background */
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    z-index: 1000;
-    opacity: 1;
-    visibility: visible;
-    transition: opacity 0.6s var(--transition-smooth), visibility 0.6s var(--transition-smooth);
+    z-index: 9999;
+    transition: opacity 0.4s ease, visibility 0.4s ease;
 }
 
-.splash-screen.fade-out {
+.splash-screen.hidden {
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
@@ -27,98 +28,26 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    text-align: center;
-    animation: scaleIn 0.8s var(--transition-smooth) both;
+    gap: 16px;
 }
 
-.nexa-logo-container {
-    width: 96px;
-    height: 96px;
-    margin-bottom: 24px;
-    border-radius: var(--border-radius);
-    box-shadow: 0 12px 32px rgba(0, 71, 171, 0.25);
-    transform: translateZ(0); /* Hardware acceleration */
-}
-
-.nexa-logo-svg {
-    width: 100%;
-    height: 100%;
-    display: block;
-    border-radius: var(--border-radius);
+.splash-logo {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+    animation: pulse 1.5s infinite ease-in-out;
 }
 
 .splash-title {
-    font-size: 2.5rem;
+    color: #ffffff;
+    font-size: 28px;
     font-weight: 700;
-    letter-spacing: -0.02em;
-    color: var(--color-text);
-    margin-bottom: 8px;
+    letter-spacing: 1px;
+    font-family: system-ui, -apple-system, sans-serif;
 }
 
-.splash-tagline {
-    font-size: 1rem;
-    font-weight: 400;
-    color: rgba(255, 255, 255, 0.6);
-    letter-spacing: 0.04em;
-    margin-bottom: 40px;
-    text-transform: uppercase;
-}
-
-.splash-loader {
-    width: 120px;
-    height: 3px;
-    background-color: rgba(255, 255, 255, 0.08);
-    border-radius: 99px;
-    overflow: hidden;
-    position: relative;
-}
-
-.loader-track {
-    width: 100%;
-    height: 100%;
-    position: relative;
-}
-
-.loader-thumb {
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, var(--color-accent), transparent);
-    animation: loadingBar 1.8s infinite var(--transition-smooth);
-}
-
-/* Keyframe Animations */
-@keyframes scaleIn {
-    0% {
-        opacity: 0;
-        transform: scale(0.92) translateY(10px);
-    }
-    100% {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-    }
-}
-
-@keyframes loadingBar {
-    0% {
-        left: -100%;
-    }
-    50% {
-        left: 0%;
-    }
-    100% {
-        left: 100%;
-    }
-}
-
-/* Reduced Motion Support for Accessibility */
-@media (prefers-reduced-motion: reduce) {
-    .splash-content,
-    .splash-screen,
-    .loader-thumb {
-        animation: none !important;
-        transition: none !important;
-    }
+@keyframes pulse {
+    0% { transform: scale(1); opacity: 0.9; }
+    50% { transform: scale(1.05); opacity: 1; }
+    100% { transform: scale(1); opacity: 0.9; }
 }
