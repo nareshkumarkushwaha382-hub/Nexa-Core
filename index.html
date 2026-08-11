@@ -82,7 +82,7 @@
             <div class="auth-container">
                 <div class="auth-header">
                     <h2>Welcome to Nexa</h2>
-                    <p>Secure authentication powered by Google & Firebase.</p>
+                    <p>Secure authentication powered by Google & Supabase.</p>
                 </div>
                 <div class="auth-card">
                     <button id="google-signin-btn" class="google-signin-btn" type="button">
@@ -169,7 +169,7 @@
                         <div class="chat-item active">
                             <div class="chat-item-info">
                                 <h4>Global Secure Channel</h4>
-                                <p>Firebase cloud sync active</p>
+                                <p>Supabase cloud sync active</p>
                             </div>
                         </div>
                     </div>
@@ -180,7 +180,7 @@
                         <div class="chat-workspace-header">
                             <div class="chat-peer-info">
                                 <h3>Global Secure Channel</h3>
-                                <span class="peer-status-text">firebase connected</span>
+                                <span class="peer-status-text">supabase connected</span>
                             </div>
                         </div>
                         <div id="message-scroll-area" class="message-scroll-area" role="log"></div>
@@ -211,15 +211,13 @@
         </section>
     </main>
 
-    <!-- Scripts -->
-        <script src="supabase-config.js" type="module"></script>
+    <!-- Scripts (Centralized & Synchronized) -->
     <script src="js/app.js" type="module" defer></script>
-    <script src="js/welcome.js" type="module" defer></script>
     <script src="js/auth.js" type="module" defer></script>
     <script src="js/username.js" type="module" defer></script>
     <script src="js/profile.js" type="module" defer></script>
-    <script src="js/home.js" type="module" defer></script>
     <script src="js/chat.js" type="module" defer></script>
     <script src="js/settings.js" type="module" defer></script>
 </body>
-</html>
+    </html>
+    
