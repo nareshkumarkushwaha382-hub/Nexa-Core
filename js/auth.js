@@ -1,71 +1,166 @@
 /**
  * @file auth.js
- * @description Supabase Google Authentication controller.
+ * @description Nexa Supabase Google Authentication controller.
  */
 
 import { supabase } from '../supabase-config.js';
 
-document.addEventListener('DOMContentLoaded', () => {
+(function () {
     'use strict';
 
     const googleSignInBtn = document.getElementById('google-signin-btn');
     const authLoading = document.getElementById('auth-loading');
+
     const splashScreen = document.getElementById('splash-screen');
+    const welcomeScreen = document.getElementById('welcome-screen');
     const authScreen = document.getElementById('auth-screen');
     const usernameScreen = document.getElementById('username-screen');
+    const profileScreen = document.getElementById('profile-screen');
     const homeScreen = document.getElementById('home-screen');
 
-    // Handle Google Sign In
-    if (googleSignInBtn) {
-        googleSignInBtn.addEventListener('click', async () => {
-            if (authLoading) authLoading.classList.remove('hidden');
-            googleSignInBtn.style.opacity = '0.5';
-            googleSignInBtn.style.pointerEvents = 'none';
+    function showOnly(screen) {
+        const screens = [
+            splashScreen,
+            welcomeScreen,
+            authScreen,
+            usernameScreen,
+            profileScreen,
+            homeScreen
+        ];
 
-            const { error } = await supabase.auth.signInWithOAuth({
-                provider: 'google',
-                options: {
-                    redirectTo: window.location.origin + window.location.pathname
-                }
-            });
+        screens.forEach((element) => {
+            if (!element) return;
 
-            if (error) {
-                console.error('[Supabase Auth Error]', error.message);
-                if (authLoading) authLoading.classList.add('hidden');
-                googleSignInBtn.style.opacity = '1';
-                googleSignInBtn.style.pointerEvents = 'auto';
+            if (element === screen) {
+                element.classList.remove('hidden');
+                element.classList.add('active');
+            } else {
+                element.classList.add('hidden');
+                element.classList.remove('active');
             }
         });
     }
 
-    // Check active session on load
-    async function checkSession() {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session) {
-            const user = session.user;
-            if (splashScreen) splashScreen.classList.add('hidden');
-            if (authScreen) authScreen.classList.add('hidden');
+    async function routeUser(session) {
+        console.log('[Nexa Auth] Routing session:', session);
 
-            // Check if user already set up a profile/username
-            const { data: profile } = await supabase
-                .from('profiles')
-                .select('*')
-                .eq('id', user.id)
-                .single();
+        if (!session || !session.user) {
+            console.log('[Nexa Auth] No active session.');
 
-            if (profile && profile.username) {
-                if (homeScreen) homeScreen.classList.remove('hidden');
-                window.sessionStorage.setItem('nexa_chosen_username', profile.username);
-                window.dispatchEvent(new CustomEvent('nexa:userLoaded', { detail: profile }));
-            } else {
-                if (usernameScreen) usernameScreen.classList.remove('hidden');
-                window.sessionStorage.setItem('nexa_temp_uid', user.id);
-                window.sessionStorage.setItem('nexa_temp_email', user.email || '');
-                window.sessionStorage.setItem('nexa_temp_photo', user.user_metadata?.avatar_url || '');
-                window.sessionStorage.setItem('nexa_temp_name', user.user_metadata?.full_name || 'Pioneer');
-            }
+            showOnly(welcomeScreen);
+            return;
         }
+
+        const user = session.user;
+
+        console.log('[Nexa Auth] Signed in user:', user.email);
+        console.log('[Nexa Auth] User ID:', user.id);
+
+        // Check whether this user already has a Nexa profile.
+        const { data: profile, error } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', user.id)
+            .maybeSingle();
+
+        if (error) {
+            console.error('[Nexa Auth] Profile lookup failed:', error);
+        }
+
+        if (profile && profile.username) {
+            console.log('[Nexa Auth] Existing profile found.');
+
+            sessionStorage.setItem(
+                'nexa_chosen_username',
+                profile.username
+            );
+
+            window.dispatchEvent(
+                new CustomEvent('nexa:userLoaded', {
+                    detail: profile
+                })
+            );
+
+            showOnly(homeScreen);
+            return;
+        }
+
+        // New user
+        console.log('[Nexa Auth] New user. Showing username screen.');
+
+        sessionStorage.setItem('nexa_temp_uid', user.id);
+        sessionStorage.setItem(
+            'nexa_temp_email',
+            user.email || ''
+        );
+
+        sessionStorage.setItem(
+            'nexa_temp_photo',
+            user.user_metadata?.avatar_url || ''
+        );
+
+        sessionStorage.setItem(
+            'nexa_temp_name',
+            user.user_metadata?.full_name || 'Pioneer'
+        );
+
+        showOnly(usernameScreen);
     }
 
-    checkSession();
-});
+    // Google Sign In
+    if (googleSignInBtn) {
+        googleSignInBtn.addEventListener('click', async () => {
+            console.log('[Nexa Auth] Starting Google sign-in...');
+
+            if (authLoading) {
+                authLoading.classList.remove('hidden');
+            }
+
+            googleSignInBtn.disabled = true;
+
+            const { error } = await supabase.auth.signInWithOAuth({
+                provider: 'google',
+                options: {
+                    redirectTo:
+                        'https://nareshkumarkushwaha382-hub.github.io/Nexa-Core/'
+                }
+            });
+
+            if (error) {
+                console.error(
+                    '[Nexa Auth] Google sign-in error:',
+                    error
+                );
+
+                if (authLoading) {
+                    authLoading.classList.add('hidden');
+                }
+
+                googleSignInBtn.disabled = false;
+            }
+        });
+    }
+
+    // IMPORTANT:
+    // Handle OAuth returning from Google.
+    supabase.auth.onAuthStateChange((event, session) => {
+        console.log('[Nexa Auth] Auth event:', event);
+
+        if (event === 'SIGNED_IN' && session) {
+            routeUser(session);
+        }
+
+        if (event === 'INITIAL_SESSION') {
+            if (session) {
+                routeUser(session);
+            } else {
+                showOnly(welcomeScreen);
+            }
+        }
+
+        if (event === 'SIGNED_OUT') {
+            showOnly(welcomeScreen);
+        }
+    });
+
+})();
