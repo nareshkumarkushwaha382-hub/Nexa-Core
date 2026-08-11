@@ -3,7 +3,7 @@
  * @description Supabase Google Authentication controller.
  */
 
-import { supabase } from '/Nexa-Core/supabase-config.js';
+import { supabase } from '../supabase-config.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     'use strict';
