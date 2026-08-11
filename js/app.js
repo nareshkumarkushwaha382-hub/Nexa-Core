@@ -20,14 +20,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Central screen router function
     function showScreen(screenName) {
-        Object.entries(screens).forEach(([name, el]) => {
-            if (!el) return;
-            if (name === screenName) {
-                el.classList.remove('hidden');
-            } else {
-                el.classList.add('hidden');
-            }
-        });
+    Object.entries(screens).forEach(([name, el]) => {
+        if (!el) return;
+
+        if (name === screenName) {
+            el.classList.remove('hidden');
+            el.classList.add('active');
+        } else {
+            el.classList.add('hidden');
+            el.classList.remove('active');
+        }
+    });
+
+    console.info(`[Nexa Router] Showing screen: ${screenName}`);
     }
 
     // Expose router globally so auth/profile modules can trigger navigation safely
