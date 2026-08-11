@@ -3,7 +3,7 @@
  * @description Master application router and event coordinator for Nexa.
  */
 
-import { supabase } from '../supabase.js';
+import { supabase } from '../supabase-config.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     'use strict';
