@@ -102,9 +102,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (chatWorkspace) chatWorkspace.classList.remove('hidden');
                 if (settingsView) settingsView.classList.add('hidden');
             } else if (tab === 'settings') {
-                if (chatsPanel) chatsPanel.classList.add('hidden');
-                if (chatWorkspace) chatsPanel.classList.add('hidden');
-                if (settingsView) settingsView.classList.remove('hidden');
+    if (chatsPanel) chatsPanel.classList.add('hidden');
+    if (chatWorkspace) chatWorkspace.classList.add('hidden');
+    if (settingsView) settingsView.classList.remove('hidden');
             }
         });
     });
