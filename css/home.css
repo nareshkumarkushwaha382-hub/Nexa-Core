@@ -387,3 +387,52 @@
         display: none;
     }
 }
+.chat-item {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 14px;
+    border-radius: 12px;
+    cursor: pointer;
+    box-sizing: border-box;
+    transition: background-color 0.2s ease;
+}
+
+.chat-item:hover {
+    background-color: rgba(255, 255, 255, 0.04);
+}
+
+.chat-item.active {
+    background-color: rgba(0, 71, 171, 0.15);
+}
+
+.chat-item-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.chat-item-info h4 {
+    margin: 0;
+    color: var(--color-text);
+    font-size: 0.95rem;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.chat-item-info p {
+    margin: 4px 0 0;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.8rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.panel-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-text);
+    letter-spacing: -0.02em;
+}
