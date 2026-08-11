@@ -1,6 +1,6 @@
 /**
  * @file app.js
- * @description Master application router and event coordinator for Nexa.
+ * @description Centralized application router and state machine for Nexa.
  */
 
 import { supabase } from '../supabase-config.js';
@@ -8,34 +8,77 @@ import { supabase } from '../supabase-config.js';
 document.addEventListener('DOMContentLoaded', () => {
     'use strict';
 
-    const splashScreen = document.getElementById('splash-screen');
-    const welcomeScreen = document.getElementById('welcome-screen');
-    const authScreen = document.getElementById('auth-screen');
-    const usernameScreen = document.getElementById('username-screen');
-    const profileScreen = document.getElementById('profile-screen');
-    const homeScreen = document.getElementById('home-screen');
-    const getStartedBtn = document.getElementById('get-started-btn');
+    // Screen elements
+    const screens = {
+        splash: document.getElementById('splash-screen'),
+        welcome: document.getElementById('welcome-screen'),
+        auth: document.getElementById('auth-screen'),
+        username: document.getElementById('username-screen'),
+        profile: document.getElementById('profile-screen'),
+        home: document.getElementById('home-screen')
+    };
 
-    // 1. Handle Welcome Screen "Get Started" click
-    if (getStartedBtn) {
-        getStartedBtn.addEventListener('click', () => {
-            if (welcomeScreen) welcomeScreen.classList.add('hidden');
-            if (authScreen) authScreen.classList.remove('hidden');
+    // Central screen router function
+    function showScreen(screenName) {
+        Object.entries(screens).forEach(([name, el]) => {
+            if (!el) return;
+            if (name === screenName) {
+                el.classList.remove('hidden');
+            } else {
+                el.classList.add('hidden');
+            }
         });
     }
 
-    // 2. Listen for custom user loaded event fired from auth/profile modules
-    window.addEventListener('nexa:userLoaded', (e) => {
-        const profile = e.detail;
-        if (!profile) return;
+    // Expose router globally so auth/profile modules can trigger navigation safely
+    window.nexaRouter = { showScreen };
 
-        // Update settings UI dynamically if available
-        const displayNameEl = document.getElementById('settings-display-name');
-        const usernameHandleEl = document.getElementById('settings-username-handle');
+    // 1. Initialize App & Check Session (Eliminates the Splash Loop)
+    async function initApp() {
+        try {
+            const { data: { session } } = await supabase.auth.getSession();
 
-        if (displayNameEl) displayNameEl.textContent = profile.display_name || 'Pioneer';
-        if (usernameHandleEl) usernameHandleEl.textContent = `@${profile.username || 'user'}`;
-    });
+            // Keep splash visible for a brief moment for branding, then route
+            setTimeout(async () => {
+                if (!session) {
+                    // No session -> Show Welcome screen
+                    showScreen('welcome');
+                } else {
+                    // Has session -> Check if profile/username exists
+                    const user = session.user;
+                    const { data: profile } = await supabase
+                        .from('profiles')
+                        .select('*')
+                        .eq('id', user.id)
+                        .maybeSingle();
+
+                    if (profile && profile.username) {
+                        window.sessionStorage.setItem('nexa_chosen_username', profile.username);
+                        window.dispatchEvent(new CustomEvent('nexa:userLoaded', { detail: profile }));
+                        showScreen('home');
+                    } else {
+                        // Logged in via Google, but hasn't picked a username yet
+                        window.sessionStorage.setItem('nexa_temp_uid', user.id);
+                        window.sessionStorage.setItem('nexa_temp_email', user.email || '');
+                        window.sessionStorage.setItem('nexa_temp_photo', user.user_metadata?.avatar_url || '');
+                        window.sessionStorage.setItem('nexa_temp_name', user.user_metadata?.full_name || 'Pioneer');
+                        showScreen('username');
+                    }
+                }
+            }, 1000);
+        } catch (err) {
+            console.error('[App Init Error]', err);
+            showScreen('welcome');
+        }
+    }
+
+    // 2. Handle Welcome Screen "Get Started" click
+    const getStartedBtn = document.getElementById('get-started-btn');
+    if (getStartedBtn) {
+        getStartedBtn.addEventListener('click', () => {
+            showScreen('auth');
+        });
+    }
 
     // 3. Handle Sidebar Navigation (Chats vs Settings tabs)
     const navItems = document.querySelectorAll('.nav-item');
@@ -46,8 +89,6 @@ document.addEventListener('DOMContentLoaded', () => {
     navItems.forEach(item => {
         item.addEventListener('click', () => {
             const tab = item.getAttribute('data-tab');
-
-            // Update active state on nav buttons
             navItems.forEach(nav => nav.classList.remove('active'));
             item.classList.add('active');
 
@@ -57,18 +98,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (settingsView) settingsView.classList.add('hidden');
             } else if (tab === 'settings') {
                 if (chatsPanel) chatsPanel.classList.add('hidden');
-                if (chatWorkspace) chatWorkspace.classList.add('hidden');
+                if (chatWorkspace) chatsPanel.classList.add('hidden');
                 if (settingsView) settingsView.classList.remove('hidden');
             }
         });
     });
 
-    // 4. Global Supabase Auth State Change Listener
-    supabase.auth.onAuthStateChange(async (event, session) => {
-        if (event === 'SIGNED_OUT') {
-            if (homeScreen) homeScreen.classList.add('hidden');
-            if (authScreen) authScreen.classList.remove('hidden');
-        }
-    });
-});
+    // 4. Listen for User Load to update Settings UI
+    window.addEventListener('nexa:userLoaded', (e) => {
+        const profile = e.detail;
+        if (!profile) return;
+        const displayNameEl = document.getElementById('settings-display-name');
+        const usernameHandleEl = document.getElementById('settings-username-handle');
 
+        if (displayNameEl) displayNameEl.textContent = profile.display_name || 'Pioneer';
+        if (usernameHandleEl) usernameHandleEl.textContent = `@${profile.username || 'user'}`;
+    });
+
+    // Run initialization
+    initApp();
+});
+                                                      
