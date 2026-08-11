@@ -1,41 +1,27 @@
-/**
- * @file welcome.js
- * @description Welcome screen action handler.
- */
+document.addEventListener("DOMContentLoaded", function () {
+    const button = document.getElementById("get-started-btn");
+    const welcome = document.getElementById("welcome-screen");
+    const auth = document.getElementById("auth-screen");
 
-(function () {
-    'use strict';
+    console.log("[Nexa] welcome.js loaded");
+    console.log("[Nexa] Button:", button);
+    console.log("[Nexa] Welcome:", welcome);
+    console.log("[Nexa] Auth:", auth);
 
-    function initWelcome() {
-        const getStartedBtn = document.getElementById('get-started-btn');
-        const welcomeScreen = document.getElementById('welcome-screen');
-        const authScreen = document.getElementById('auth-screen');
-
-        if (!getStartedBtn) {
-            console.error('[Nexa] Get Started button not found.');
-            return;
-        }
-
-        getStartedBtn.addEventListener('click', () => {
-            getStartedBtn.blur();
-
-            if (welcomeScreen) {
-                welcomeScreen.classList.remove('active');
-                welcomeScreen.classList.add('hidden');
-            }
-
-            if (authScreen) {
-                authScreen.classList.remove('hidden');
-                authScreen.classList.add('active');
-            }
-
-            console.info('[Nexa] Welcome → Authentication transition complete.');
-        });
+    if (!button) {
+        console.error("[Nexa] Get Started button NOT FOUND");
+        return;
     }
 
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initWelcome);
-    } else {
-        initWelcome();
-    }
-})();
+    button.onclick = function () {
+        console.log("[Nexa] Get Started clicked");
+
+        welcome.classList.remove("active");
+        welcome.classList.add("hidden");
+
+        auth.classList.remove("hidden");
+        auth.classList.add("active");
+
+        console.log("[Nexa] Welcome → Authentication");
+    };
+});
