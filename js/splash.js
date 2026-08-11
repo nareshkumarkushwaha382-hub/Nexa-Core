@@ -1,6 +1,6 @@
 /**
  * @file splash.js
- * @description Immediate execution splash screen controller.
+ * @description Splash screen transition controller.
  */
 
 (function () {
@@ -13,14 +13,16 @@
         if (splashScreen) {
             splashScreen.classList.add('hidden');
         }
+
         if (welcomeScreen) {
             welcomeScreen.classList.remove('hidden');
+            welcomeScreen.classList.add('active');
         }
+
+        console.info('[Nexa] Splash → Welcome transition complete.');
     }
 
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', hideSplash);
-    } else {
-        setTimeout(hideSplash, 1200); // Triggers even if DOM is already loaded
-    }
+    document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(hideSplash, 1200);
+    });
 })();
