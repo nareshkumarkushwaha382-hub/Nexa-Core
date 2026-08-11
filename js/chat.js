@@ -1,6 +1,6 @@
 /**
  * @file chat.js
- * @description Real-time chat via Supabase Realtime Channels.
+ * @description Realtime chat via Supabase channels with authenticated user checks.
  */
 
 import { supabase } from '../supabase-config.js';
@@ -14,11 +14,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const activeRoomId = 'global_room';
 
     async function initChat() {
-        // 1. Double-check that a user session exists before opening sockets
         const { data: { session } } = await supabase.auth.getSession();
-        if (!session) return; // Exit quietly if not logged in yet
+        if (!session) return;
 
-        // 2. Fetch initial existing messages
         const { data, error } = await supabase
             .from('messages')
             .select('*')
@@ -30,7 +28,6 @@ document.addEventListener('DOMContentLoaded', () => {
             data.forEach(msg => appendMessage(msg.text, msg.sender_name));
         }
 
-        // 3. Subscribe to real-time incoming messages safely
         supabase
             .channel('public:messages')
             .on('postgres_changes', {
@@ -98,6 +95,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Initialize chat session check
     initChat();
 });
+
