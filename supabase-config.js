@@ -1,5 +1,5 @@
 /**
- * @file supabase.js
+ * @file supabase-config.js
  * @description Supabase client initialization module.
  */
 
