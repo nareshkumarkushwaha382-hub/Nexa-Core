@@ -1,24 +1,20 @@
 /**
  * @file settings.js
- * @description Supabase sign out controller.
+ * @description Sign out and settings actions.
  */
 
 import { supabase } from '../supabase-config.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     'use strict';
-
     const logoutBtn = document.getElementById('logout-btn');
 
     if (logoutBtn) {
         logoutBtn.addEventListener('click', async () => {
-            try {
-                await supabase.auth.signOut();
-                window.sessionStorage.clear();
-                location.reload();
-            } catch (err) {
-                console.error('[SignOut Error]', err);
-            }
+            await supabase.auth.signOut();
+            window.sessionStorage.clear();
+            window.nexaRouter.showScreen('auth');
         });
     }
 });
+
