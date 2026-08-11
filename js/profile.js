@@ -1,6 +1,6 @@
 /**
  * @file profile.js
- * @description Profile creation and database persistence.
+ * @description Profile registration and snake_case display_name persistence.
  */
 
 import { supabase } from '../supabase-config.js';
@@ -48,9 +48,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 window.dispatchEvent(new CustomEvent('nexa:userLoaded', { detail: profile }));
                 window.nexaRouter.showScreen('home');
             } catch (err) {
-                console.error('[Profile Save Error]', err.message);
+                console.error('[Profile Save Error]', err);
             }
         });
     }
 });
-
