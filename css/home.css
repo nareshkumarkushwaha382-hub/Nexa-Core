@@ -436,3 +436,20 @@
     color: var(--color-text);
     letter-spacing: -0.02em;
 }
+/* Nexa view switching */
+#workspace-area.hidden,
+#primary-home-panel.hidden,
+#settings-view.hidden {
+    display: none !important;
+}
+
+#settings-view {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+#settings-view:not(.hidden) {
+    display: flex;
+    flex-direction: column;
+}
