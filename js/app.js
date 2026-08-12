@@ -51,87 +51,89 @@ document.addEventListener('DOMContentLoaded', () => {
             showScreen('auth');
         });
     }
+// -----------------------------
+// HOME NAVIGATION
+// -----------------------------
 
-    // -----------------------------
-    // HOME NAVIGATION
-    // -----------------------------
+const navItems = document.querySelectorAll('.nav-item');
 
-    const navItems =
-        document.querySelectorAll('.nav-item');
+const chatsPanel = document.getElementById('primary-home-panel');
+const chatWorkspace = document.getElementById('workspace-area');
+const activeChat = document.getElementById('active-chat-container');
+const settingsView = document.getElementById('settings-view');
 
-    const chatsPanel =
-        document.getElementById('primary-home-panel');
+navItems.forEach(item => {
 
-    const chatWorkspace =
-        document.getElementById('workspace-area');
+    item.addEventListener('click', () => {
 
-    const settingsView =
-        document.getElementById('settings-view');
+        const tab = item.getAttribute('data-tab');
 
-    console.log('[Nexa] Nav items:', navItems.length);
-    console.log('[Nexa] Chats panel:', !!chatsPanel);
-    console.log('[Nexa] Chat workspace:', !!chatWorkspace);
-    console.log('[Nexa] Settings view:', !!settingsView);
+        console.log('[Nexa] Navigation:', tab);
 
-    navItems.forEach(item => {
-
-        item.addEventListener('click', () => {
-
-            const tab =
-                item.getAttribute('data-tab');
-
-            console.log('[Nexa] Navigation:', tab);
-
-            // Active button
-            navItems.forEach(nav => {
-                nav.classList.remove('active');
-            });
-
-            item.classList.add('active');
-
-            // -------------------------
-            // CHATS
-            // -------------------------
-
-            if (tab === 'chats') {
-
-                if (chatsPanel) {
-                    chatsPanel.classList.remove('hidden');
-                }
-
-                if (chatWorkspace) {
-                    chatWorkspace.classList.remove('hidden');
-                }
-
-                if (settingsView) {
-                    settingsView.classList.add('hidden');
-                }
-
-                console.log('[Nexa] Chats opened');
-            }
-
-            // -------------------------
-            // SETTINGS
-            // -------------------------
-
-            if (tab === 'settings') {
-
-                if (chatsPanel) {
-                    chatsPanel.classList.add('hidden');
-                }
-
-                if (chatWorkspace) {
-                    chatWorkspace.classList.add('hidden');
-                }
-
-                if (settingsView) {
-                    settingsView.classList.remove('hidden');
-                }
-
-                console.log('[Nexa] Settings opened');
-            }
+        // Update active button
+        navItems.forEach(nav => {
+            nav.classList.remove('active');
         });
-    });
 
-    console.log('[Nexa] Router ready');
+        item.classList.add('active');
+
+        // -------------------------
+        // CHATS
+        // -------------------------
+
+        if (tab === 'chats') {
+
+            if (chatsPanel) {
+                chatsPanel.classList.remove('hidden');
+            }
+
+            // Keep workspace visible
+            if (chatWorkspace) {
+                chatWorkspace.classList.remove('hidden');
+            }
+
+            // Show actual chat
+            if (activeChat) {
+                activeChat.classList.remove('hidden');
+            }
+
+            // Hide settings
+            if (settingsView) {
+                settingsView.classList.add('hidden');
+            }
+
+            console.log('[Nexa] Chats opened');
+        }
+
+        // -------------------------
+        // SETTINGS
+        // -------------------------
+
+        if (tab === 'settings') {
+
+            // Hide chat list
+            if (chatsPanel) {
+                chatsPanel.classList.add('hidden');
+            }
+
+            // IMPORTANT:
+            // Do NOT hide workspace-area.
+            // Settings is INSIDE workspace-area.
+            if (chatWorkspace) {
+                chatWorkspace.classList.remove('hidden');
+            }
+
+            // Hide actual chat
+            if (activeChat) {
+                activeChat.classList.add('hidden');
+            }
+
+            // Show settings
+            if (settingsView) {
+                settingsView.classList.remove('hidden');
+            }
+
+            console.log('[Nexa] Settings opened');
+        }
+    });
 });
