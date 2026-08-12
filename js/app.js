@@ -137,3 +137,4 @@ navItems.forEach(item => {
         }
     });
 });
+}
