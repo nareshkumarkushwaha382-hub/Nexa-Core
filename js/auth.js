@@ -14,107 +14,210 @@ document.addEventListener('DOMContentLoaded', () => {
     const authLoading = document.getElementById('auth-loading');
 
     /*
-     * Wait until app.js has created the NEXA router.
-     * This prevents:
-     * "Cannot read properties of undefined (reading 'showScreen')"
+     * Navigate to a NEXA screen.
+     *
+     * Uses nexaRouter if available.
+     * Otherwise directly changes the screen classes.
      */
-    function waitForRouter(screenName, attempts = 0) {
+    function navigate(screenName) {
+
+        console.log('[Nexa Auth] Navigating to:', screenName);
+
+        // Preferred: use NEXA router
         if (
             window.nexaRouter &&
             typeof window.nexaRouter.showScreen === 'function'
         ) {
-            console.log('[Nexa Auth] Router ready. Opening:', screenName);
             window.nexaRouter.showScreen(screenName);
             return;
         }
 
-        if (attempts >= 50) {
-            console.error('[Nexa Auth] Router failed to initialize.');
+        /*
+         * Fallback navigation.
+         * This prevents auth.js from getting stuck forever
+         * when app.js has not created the router yet.
+         */
+        const screenMap = {
+            splash: 'splash-screen',
+            welcome: 'welcome-screen',
+            auth: 'auth-screen',
+            username: 'username-screen',
+            profile: 'profile-screen',
+            home: 'home-screen'
+        };
+
+        const targetId = screenMap[screenName];
+
+        if (!targetId) {
+            console.error(
+                '[Nexa Auth] Unknown screen:',
+                screenName
+            );
             return;
         }
 
-        setTimeout(() => {
-            waitForRouter(screenName, attempts + 1);
-        }, 100);
+        const screens = [
+            'splash-screen',
+            'welcome-screen',
+            'auth-screen',
+            'username-screen',
+            'profile-screen',
+            'home-screen'
+        ];
+
+        screens.forEach(id => {
+            const element = document.getElementById(id);
+
+            if (element) {
+                element.classList.add('hidden');
+                element.classList.remove('active');
+            }
+        });
+
+        const target = document.getElementById(targetId);
+
+        if (target) {
+            target.classList.remove('hidden');
+            target.classList.add('active');
+
+            console.log(
+                '[Nexa Auth] Direct navigation successful:',
+                screenName
+            );
+        } else {
+            console.error(
+                '[Nexa Auth] Screen not found:',
+                targetId
+            );
+        }
     }
 
+
     /*
-     * Google Sign In
+     * GOOGLE SIGN-IN
      */
     if (googleBtn) {
+
         googleBtn.addEventListener('click', async () => {
+
             try {
+
                 if (authLoading) {
                     authLoading.classList.remove('hidden');
                 }
 
-                console.log('[Nexa Auth] Starting Google sign-in...');
+                console.log(
+                    '[Nexa Auth] Starting Google sign-in...'
+                );
 
-                const { error } = await supabase.auth.signInWithOAuth({
-                    provider: 'google',
-                    options: {
-                        redirectTo:
-                            window.location.origin +
-                            window.location.pathname
-                    }
-                });
+                const { error } =
+                    await supabase.auth.signInWithOAuth({
+                        provider: 'google',
+
+                        options: {
+                            redirectTo:
+                                window.location.origin +
+                                window.location.pathname
+                        }
+                    });
 
                 if (error) {
                     throw error;
                 }
 
-            } catch (err) {
-                console.error('[Nexa Auth] Sign-in error:', err);
+            } catch (error) {
+
+                console.error(
+                    '[Nexa Auth] Sign-in error:',
+                    error
+                );
 
                 if (authLoading) {
                     authLoading.classList.add('hidden');
                 }
             }
         });
+
+    } else {
+
+        console.warn(
+            '[Nexa Auth] Google sign-in button not found.'
+        );
+
     }
 
+
     /*
-     * Authentication state listener
+     * AUTH STATE
      */
-    supabase.auth.onAuthStateChange(async (event, session) => {
+    supabase.auth.onAuthStateChange(
+        async (event, session) => {
 
-        console.log('[Nexa Auth] Auth event:', event);
+            console.log(
+                '[Nexa Auth] Auth event:',
+                event
+            );
 
-        if (!session) {
-            return;
-        }
-
-        if (
-            event === 'SIGNED_IN' ||
-            event === 'INITIAL_SESSION'
-        ) {
-            const user = session.user;
-
-            console.log('[Nexa Auth] User:', user.id);
+            if (!session) {
+                return;
+            }
 
             /*
-             * Get NEXA profile
+             * Only handle an authenticated session.
              */
-            const { data: profile, error } = await supabase
+            if (
+                event !== 'SIGNED_IN' &&
+                event !== 'INITIAL_SESSION'
+            ) {
+                return;
+            }
+
+            const user = session.user;
+
+            console.log(
+                '[Nexa Auth] User authenticated:',
+                user.id
+            );
+
+
+            /*
+             * Look for the user's NEXA profile.
+             */
+            const {
+                data: profile,
+                error: profileError
+            } = await supabase
                 .from('profiles')
                 .select('*')
                 .eq('id', user.id)
                 .maybeSingle();
 
-            if (error) {
+
+            if (profileError) {
+
                 console.error(
-                    '[Nexa Auth] Profile error:',
-                    error
+                    '[Nexa Auth] Profile lookup error:',
+                    profileError
                 );
+
+                if (authLoading) {
+                    authLoading.classList.add('hidden');
+                }
+
+                return;
             }
 
+
             /*
-             * Existing NEXA profile
+             * EXISTING USER
              */
-            if (profile && profile.username) {
+            if (
+                profile &&
+                profile.username
+            ) {
 
                 console.log(
-                    '[Nexa Auth] Existing profile:',
+                    '[Nexa Auth] Existing user:',
                     profile.username
                 );
 
@@ -124,20 +227,30 @@ document.addEventListener('DOMContentLoaded', () => {
                 );
 
                 window.dispatchEvent(
-                    new CustomEvent('nexa:userLoaded', {
-                        detail: profile
-                    })
+                    new CustomEvent(
+                        'nexa:userLoaded',
+                        {
+                            detail: profile
+                        }
+                    )
                 );
 
-                waitForRouter('home');
+                if (authLoading) {
+                    authLoading.classList.add('hidden');
+                }
+
+                navigate('home');
 
                 return;
             }
 
+
             /*
-             * New user
+             * NEW USER
              */
-            console.log('[Nexa Auth] New user. Username required.');
+            console.log(
+                '[Nexa Auth] New user. Opening username screen.'
+            );
 
             sessionStorage.setItem(
                 'nexa_temp_uid',
@@ -156,10 +269,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
             sessionStorage.setItem(
                 'nexa_temp_name',
-                user.user_metadata?.full_name || 'Pioneer'
+                user.user_metadata?.full_name ||
+                'Pioneer'
             );
 
-            waitForRouter('username');
+            if (authLoading) {
+                authLoading.classList.add('hidden');
+            }
+
+            navigate('username');
         }
-    });
+    );
+
 });
