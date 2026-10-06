@@ -1,53 +1,22 @@
-/**
- * @file splash.css
- * @description Styles for the Nexa splash loading screen.
- */
-
-.splash-screen {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background-color: #0f1117; /* Sleek dark theme background */
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+#splash-view {
     align-items: center;
-    z-index: 9999;
-    transition: opacity 0.4s ease, visibility 0.4s ease;
-}
-
-.splash-screen.hidden {
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
+    justify-content: center;
+    background-color: var(--bg-primary);
 }
 
 .splash-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 16px;
+    text-align: center;
 }
 
-.splash-logo {
-    width: 80px;
-    height: 80px;
-    object-fit: contain;
-    animation: pulse 1.5s infinite ease-in-out;
+.splash-content h1 {
+    font-size: 3rem;
+    font-weight: 800;
+    letter-spacing: -0.05em;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
 }
 
-.splash-title {
-    color: #ffffff;
-    font-size: 28px;
-    font-weight: 700;
-    letter-spacing: 1px;
-    font-family: system-ui, -apple-system, sans-serif;
-}
-
-@keyframes pulse {
-    0% { transform: scale(1); opacity: 0.9; }
-    50% { transform: scale(1.05); opacity: 1; }
-    100% { transform: scale(1); opacity: 0.9; }
+.splash-content p {
+    color: var(--text-secondary);
+    font-size: 1.125rem;
 }
