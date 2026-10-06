@@ -47,23 +47,59 @@ export function showView(viewName, viewData = null) {
  */
 async function initApp() {
     try {
+        console.log('1. initApp started...');
         showView('splash');
 
-        // Fetch current session with safety timeout fallback (8 seconds)
-        const sessionPromise = supabase.auth.getSession();
-        const timeoutPromise = new Promise((_, reject) => 
-            setTimeout(() => reject(new Error('Session fetch timeout')), 8000)
-        );
-
-        const { data: { session }, error } = await Promise.race([sessionPromise, timeoutPromise]);
+        const { data: { session }, error } = await supabase.auth.getSession();
+        console.log('2. Session result:', { session, error });
         
         if (error) throw error;
 
-        // If no active session, show welcome/login screen
         if (!session) {
+            console.log('3. No session found. Switching to welcome.');
             showView('welcome');
             return;
         }
+
+        const userId = session.user.id;
+        console.log('4. User ID found:', userId);
+
+        let { data: profile, error: profileError } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', userId)
+            .maybeSingle();
+
+        console.log('5. Profile fetch result:', { profile, profileError });
+
+        if (!profile) {
+            console.log('6. Profile missing. Auto-creating profile row...');
+            const { data: newProfile, error: createError } = await supabase
+                .from('profiles')
+                .insert({ id: userId })
+                .select()
+                .single();
+
+            console.log('7. Create profile result:', { newProfile, createError });
+            profile = newProfile;
+        }
+
+        if (!profile || !profile.username) {
+            console.log('8. Directing to username view');
+            showView('username');
+        } else if (!profile.display_name) {
+            console.log('9. Directing to profile view');
+            showView('profile');
+        } else {
+            console.log('10. Directing to home view with userId:', userId);
+            showView('home', userId);
+        }
+
+    } catch (err) {
+        console.error('CRITICAL initApp Exception:', err);
+        showView('welcome');
+    }
+}
 
         const userId = session.user.id;
 
