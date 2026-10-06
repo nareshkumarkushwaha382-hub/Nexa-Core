@@ -1,55 +1,44 @@
-/**
- * @file profile.js
- * @description Profile registration and snake_case display_name persistence.
- */
-
 import { supabase } from '../supabase-config.js';
+import { showView } from './app.js';
 
-document.addEventListener('DOMContentLoaded', () => {
-    'use strict';
-    const avatarImg = document.getElementById('profile-avatar-img');
-    const nameInput = document.getElementById('display-name-input');
-    const bioInput = document.getElementById('bio-input');
-    const submitBtn = document.getElementById('profile-submit-btn');
+const profileForm = document.getElementById('profile-form');
+const displayNameInput = document.getElementById('display-name-input');
+const bioInput = document.getElementById('bio-input');
 
-    const tempName = window.sessionStorage.getItem('nexa_temp_name') || '';
-    const tempPhoto = window.sessionStorage.getItem('nexa_temp_photo') || '';
+profileForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const displayName = displayNameInput.value.trim();
+    const bio = bioInput.value.trim();
 
-    if (nameInput) nameInput.value = tempName;
-    if (avatarImg && tempPhoto) avatarImg.src = tempPhoto;
+    if (!displayName) {
+        alert('Display name is required.');
+        return;
+    }
 
-    if (submitBtn) {
-        submitBtn.addEventListener('click', async () => {
-            const uid = window.sessionStorage.getItem('nexa_temp_uid');
-            const username = window.sessionStorage.getItem('nexa_chosen_username');
-            const displayName = nameInput ? nameInput.value.trim() : tempName;
-            const bio = bioInput ? bioInput.value.trim() : '';
+    try {
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        if (sessionError || !session) {
+            throw new Error('No active session found. Please sign in again.');
+        }
 
-            if (!uid || !username) return;
+        // Update profile with display name and bio
+        const { error: updateError } = await supabase
+            .from('profiles')
+            .update({
+                display_name: displayName,
+                bio: bio,
+                updated_at: new Date().toISOString()
+            })
+            .eq('id', session.user.id);
 
-            try {
-                const { error } = await supabase.from('profiles').upsert({
-                    id: uid,
-                    username: username,
-                    display_name: displayName,
-                    bio: bio,
-                    avatar_url: tempPhoto,
-                    updated_at: new Date()
-                });
+        if (updateError) throw updateError;
 
-                if (error) throw error;
+        // Profile complete, enter home dashboard
+        showView('home');
+        // TODO: Trigger home/chat module initialization
 
-                const { data: profile } = await supabase
-                    .from('profiles')
-                    .select('*')
-                    .eq('id', uid)
-                    .single();
-
-                window.dispatchEvent(new CustomEvent('nexa:userLoaded', { detail: profile }));
-                window.nexaRouter.showScreen('home');
-            } catch (err) {
-                console.error('[Profile Save Error]', err);
-            }
-        });
+    } catch (err) {
+        console.error('Error updating profile:', err);
+        alert('Failed to update profile: ' + err.message);
     }
 });
