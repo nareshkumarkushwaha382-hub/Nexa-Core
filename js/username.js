@@ -1,62 +1,56 @@
-/**
- * @file username.js
- * @description Unique handle validation and database check.
- */
-
 import { supabase } from '../supabase-config.js';
+import { showView } from './app.js';
 
-document.addEventListener('DOMContentLoaded', () => {
-    'use strict';
-    const usernameInput = document.getElementById('username-input');
-    const submitBtn = document.getElementById('username-submit-btn');
-    const feedback = document.getElementById('username-feedback');
+const usernameForm = document.getElementById('username-form');
+const usernameInput = document.getElementById('username-input');
 
-    let isAvailable = false;
+usernameForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const username = usernameInput.value.trim().toLowerCase();
 
-    if (usernameInput) {
-        usernameInput.addEventListener('input', async (e) => {
-            const val = e.target.value.toLowerCase().trim();
-            const regex = /^[a-z0-9_]{3,24}$/;
-
-            if (!regex.test(val)) {
-                feedback.textContent = 'Use 3-24 lowercase letters, numbers, underscores.';
-                feedback.style.color = '#ff4d4d';
-                submitBtn.disabled = true;
-                isAvailable = false;
-                return;
-            }
-
-            const { data, error } = await supabase
-                .from('profiles')
-                .select('username')
-                .eq('username', val)
-                .maybeSingle();
-
-            if (error) {
-                console.error('[Username Check Error]', error);
-                return;
-            }
-
-            if (data) {
-                feedback.textContent = 'Username is already taken.';
-                feedback.style.color = '#ff4d4d';
-                submitBtn.disabled = true;
-                isAvailable = false;
-            } else {
-                feedback.textContent = 'Username is available!';
-                feedback.style.color = '#00C853';
-                submitBtn.disabled = false;
-                isAvailable = true;
-            }
-        });
+    // Client-side validation: 3–24 chars, lowercase letters, numbers, underscores
+    const regex = /^[a-z0-9_]{3,24}$/;
+    if (!regex.test(username)) {
+        alert('Username must be 3–24 characters long and contain only lowercase letters, numbers, and underscores.');
+        return;
     }
 
-    if (submitBtn) {
-        submitBtn.addEventListener('click', () => {
-            if (!isAvailable) return;
-            const chosen = usernameInput.value.toLowerCase().trim();
-            window.sessionStorage.setItem('nexa_chosen_username', chosen);
-            window.nexaRouter.showScreen('profile');
-        });
+    try {
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        if (sessionError || !session) {
+            throw new Error('No active session found. Please sign in again.');
+        }
+
+        // Check if username is already taken
+        const { data: existingUser, error: checkError } = await supabase
+            .from('profiles')
+            .select('id')
+            .eq('username', username)
+            .maybeSingle();
+
+        if (checkError) throw checkError;
+
+        if (existingUser && existingUser.id !== session.user.id) {
+            alert('This username is already taken. Please choose another one.');
+            return;
+        }
+
+        // Upsert profile with the new username
+        const { error: upsertError } = await supabase
+            .from('profiles')
+            .upsert({
+                id: session.user.id,
+                username: username,
+                updated_at: new Date().toISOString()
+            });
+
+        if (upsertError) throw upsertError;
+
+        // Proceed to profile setup view
+        showView('profile');
+
+    } catch (err) {
+        console.error('Error saving username:', err);
+        alert('Failed to save username: ' + err.message);
     }
 });
