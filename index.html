@@ -3,15 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEXA - Modern Messaging</title>
-    <link rel="stylesheet" href="css/main.css">
-    <link rel="stylesheet" href="css/splash.css">
-    <link rel="stylesheet" href="css/welcome.css">
-    <link rel="stylesheet" href="css/username.css">
-    <link rel="stylesheet" href="css/profile.css">
-    <link rel="stylesheet" href="css/home.css">
-    <link rel="stylesheet" href="css/chat.css">
-    <link rel="stylesheet" href="css/settings.css">
+    <title>NEXA - Secure Messaging</title>
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="./css/main.css">
+    <link rel="stylesheet" href="./css/splash.css">
+    <link rel="stylesheet" href="./css/welcome.css">
+    <link rel="stylesheet" href="./css/username.css">
+    <link rel="stylesheet" href="./css/profile.css">
+    <link rel="stylesheet" href="./css/home.css">
+    <link rel="stylesheet" href="./css/chat.css">
+    <link rel="stylesheet" href="./css/settings.css">
 </head>
 <body>
     <div id="app">
@@ -19,16 +21,18 @@
         <section id="splash-view" class="view active">
             <div class="splash-content">
                 <h1>NEXA</h1>
-                <p>Loading your secure space...</p>
+                <p>Initializing secure session...</p>
             </div>
         </section>
 
         <!-- 2. Welcome / Login View -->
         <section id="welcome-view" class="view hidden">
             <div class="welcome-container">
-                <h1>Welcome to NEXA</h1>
-                <p>Secure, real-time messaging made simple.</p>
-                <button id="google-login-btn" class="primary-btn">Sign in with Google</button>
+                <h1>NEXA</h1>
+                <p>A modern, secure messaging experience.</p>
+                <button id="google-login-btn" class="primary-btn">
+                    Sign in with Google
+                </button>
             </div>
         </section>
 
@@ -36,10 +40,10 @@
         <section id="username-view" class="view hidden">
             <div class="onboarding-container">
                 <h2>Choose a Username</h2>
-                <p>This will be your unique handle on NEXA.</p>
+                <p>This is your unique handle on NEXA.</p>
                 <form id="username-form">
-                    <input type="text" id="username-input" placeholder="e.g. alex_99" pattern="^[a-z0-9_]{3,24}$" required>
-                    <small>3–24 characters: lowercase letters, numbers, and underscores.</small>
+                    <input type="text" id="username-input" placeholder="e.g. alex_dev" required pattern="^[a-zA-Z0-9_]{3,20}$">
+                    <small>3-20 characters. Letters, numbers, and underscores only.</small>
                     <button type="submit" class="primary-btn">Continue</button>
                 </form>
             </div>
@@ -49,15 +53,16 @@
         <section id="profile-view" class="view hidden">
             <div class="onboarding-container">
                 <h2>Set Up Your Profile</h2>
+                <p>Tell your contacts who you are.</p>
                 <form id="profile-form">
                     <input type="text" id="display-name-input" placeholder="Display Name" required>
-                    <textarea id="bio-input" placeholder="Tell us a bit about yourself..."></textarea>
-                    <button type="submit" class="primary-btn">Complete Setup</button>
+                    <textarea id="bio-input" placeholder="Write a short bio..."></textarea>
+                    <button type="submit" class="primary-btn">Save & Launch</button>
                 </form>
             </div>
         </section>
 
-        <!-- 5. Home / Chat List View -->
+        <!-- 5. Home / Dashboard View -->
         <section id="home-view" class="view hidden">
             <div class="app-layout">
                 <aside class="sidebar">
@@ -69,31 +74,15 @@
                         <input type="text" id="user-search-input" placeholder="Search users...">
                     </div>
                     <div id="conversations-list" class="conversations-list">
-                        <!-- Dynamic conversation list items rendered here -->
+                        <p class="loading-text">Loading chats...</p>
                     </div>
                 </aside>
                 <main class="main-chat-area">
                     <div id="no-chat-selected" class="empty-state">
                         <p>Select a conversation or search for a user to start messaging.</p>
                     </div>
-                    <!-- Active Chat View Container -->
-                    <div id="active-chat-container" class="hidden">
-                        <div class="chat-header">
-                            <button id="back-to-list-btn" class="mobile-only">←</button>
-                            <img id="chat-header-avatar" src="" alt="Avatar" class="avatar">
-                            <div>
-                                <h4 id="chat-header-name"></h4>
-                                <span id="chat-header-username"></span>
-                            </div>
-                        </div>
-                        <div id="messages-container" class="messages-container">
-                            <!-- Dynamic messages rendered here -->
-                        </div>
-                        <form id="message-form" class="message-form">
-                            <input type="text" id="message-input" placeholder="Type a message..." autocomplete="off" required>
-                            <button type="submit" class="send-btn">Send</button>
-                        </form>
-                    </div>
+                    <!-- Active Chat Area (populated dynamically) -->
+                    <div id="active-chat-container" class="hidden"></div>
                 </main>
             </div>
         </section>
@@ -102,15 +91,16 @@
         <section id="settings-view" class="view hidden">
             <div class="settings-container">
                 <h2>Settings</h2>
-                <div id="settings-profile-info"></div>
-                <button id="logout-btn" class="danger-btn">Log Out</button>
+                <div id="settings-profile-info">
+                    <p>Loading profile...</p>
+                </div>
                 <button id="back-to-home-btn" class="secondary-btn">Back to Chats</button>
+                <button id="logout-btn" class="danger-btn">Sign Out</button>
             </div>
         </section>
     </div>
 
-    <!-- Supabase Client CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script type="module" src="js/app.js"></script>
+    <!-- Application Script Entry Point -->
+    <script type="module" src="./js/app.js"></script>
 </body>
 </html>
