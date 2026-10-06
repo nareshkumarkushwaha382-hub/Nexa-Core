@@ -1,27 +1,26 @@
-document.addEventListener("DOMContentLoaded", function () {
-    const button = document.getElementById("get-started-btn");
-    const welcome = document.getElementById("welcome-screen");
-    const auth = document.getElementById("auth-screen");
+import { supabase } from '../supabase-config.js';
 
-    console.log("[Nexa] welcome.js loaded");
-    console.log("[Nexa] Button:", button);
-    console.log("[Nexa] Welcome:", welcome);
-    console.log("[Nexa] Auth:", auth);
+export function initWelcome() {
+    const googleLoginBtn = document.getElementById('google-login-btn');
+    
+    if (googleLoginBtn) {
+        // Remove existing listeners to avoid duplicates if re-initialized
+        googleLoginBtn.replaceWith(googleLoginBtn.cloneNode(true));
+        const freshBtn = document.getElementById('google-login-btn');
 
-    if (!button) {
-        console.error("[Nexa] Get Started button NOT FOUND");
-        return;
+        freshBtn.addEventListener('click', async () => {
+            try {
+                const { error } = await supabase.auth.signInWithOAuth({
+                    provider: 'google',
+                    options: {
+                        redirectTo: window.location.origin
+                    }
+                });
+                if (error) throw error;
+            } catch (err) {
+                console.error('Google Auth Error:', err);
+                alert('Authentication failed: ' + err.message);
+            }
+        });
     }
-
-    button.onclick = function () {
-        console.log("[Nexa] Get Started clicked");
-
-        welcome.classList.remove("active");
-        welcome.classList.add("hidden");
-
-        auth.classList.remove("hidden");
-        auth.classList.add("active");
-
-        console.log("[Nexa] Welcome → Authentication");
-    };
-});
+}
