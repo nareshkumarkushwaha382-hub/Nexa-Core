@@ -1,138 +1,56 @@
 import { supabase } from '../supabase-config.js';
+import { showView } from './app.js';
 
-document.addEventListener('DOMContentLoaded', () => {
-    'use strict';
+export async function initSettings(userId) {
+    const infoContainer = document.getElementById('settings-profile-info');
+    if (!infoContainer) return;
 
-    const displayName =
-        document.getElementById('settings-display-name');
+    infoContainer.innerHTML = '<p>Loading profile info...</p>';
 
-    const usernameHandle =
-        document.getElementById('settings-username-handle');
+    try {
+        const { data: profile, error } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', userId)
+            .single();
 
-    const logoutBtn =
-        document.getElementById('logout-btn');
+        if (error) throw error;
 
-
-    // -----------------------------
-    // LOAD USER PROFILE
-    // -----------------------------
-
-    async function loadSettings() {
-
-        const {
-            data: { session },
-            error: sessionError
-        } = await supabase.auth.getSession();
-
-        if (sessionError) {
-            console.error(
-                '[Nexa Settings] Session error:',
-                sessionError
-            );
-            return;
-        }
-
-        if (!session) {
-            console.log('[Nexa Settings] No active user.');
-            return;
-        }
-
-        const user = session.user;
-
-        console.log(
-            '[Nexa Settings] User:',
-            user.id
-        );
-
-
-        const { data: profile, error } =
-            await supabase
-                .from('profiles')
-                .select('username, display_name')
-                .eq('id', user.id)
-                .maybeSingle();
-
-
-        if (error) {
-            console.error(
-                '[Nexa Settings] Profile error:',
-                error
-            );
-            return;
-        }
-
-
-        if (profile) {
-
-            if (displayName) {
-                displayName.textContent =
-                    profile.display_name ||
-                    user.user_metadata?.full_name ||
-                    'Pioneer';
-            }
-
-            if (usernameHandle) {
-                usernameHandle.textContent =
-                    '@' +
-                    (profile.username || 'user');
-            }
-
-        } else {
-
-            // Fallback if profile isn't found
-            if (displayName) {
-                displayName.textContent =
-                    user.user_metadata?.full_name ||
-                    'Pioneer';
-            }
-
-            if (usernameHandle) {
-                usernameHandle.textContent = '@user';
-            }
-        }
+        infoContainer.innerHTML = `
+            <div class="settings-profile-card">
+                <h3>${profile.display_name || 'User'}</h3>
+                <p><strong>Username:</strong> @${profile.username}</p>
+                <p><strong>Bio:</strong> ${profile.bio || 'No bio provided.'}</p>
+            </div>
+        `;
+    } catch (err) {
+        console.error('Error loading settings profile:', err);
+        infoContainer.innerHTML = '<p class="error-text">Failed to load profile details.</p>';
     }
+}
 
-
-    // -----------------------------
-    // SIGN OUT
-    // -----------------------------
-
-    if (logoutBtn) {
-
-        logoutBtn.addEventListener(
-            'click',
-            async () => {
-
-                logoutBtn.disabled = true;
-                logoutBtn.textContent = 'Signing out...';
-
-                const { error } =
-                    await supabase.auth.signOut();
-
-                if (error) {
-
-                    console.error(
-                        '[Nexa Settings] Sign out error:',
-                        error
-                    );
-
-                    logoutBtn.disabled = false;
-                    logoutBtn.textContent = 'Sign Out';
-
-                    return;
-                }
-
-                window.sessionStorage.clear();
-
-                if (window.nexaRouter) {
-                    window.nexaRouter.showScreen('welcome');
-                }
-            }
-        );
+// Logout handler
+document.getElementById('logout-btn')?.addEventListener('click', async () => {
+    try {
+        const { error } = await supabase.auth.signOut();
+        if (error) throw error;
+        showView('welcome');
+    } catch (err) {
+        console.error('Logout error:', err);
+        alert('Failed to log out cleanly.');
     }
+});
 
+// Navigation back from settings
+document.getElementById('back-to-home-btn')?.addEventListener('click', () => {
+    showView('home');
+});
 
-    // Load profile
-    loadSettings();
-
+// Trigger settings view from home
+document.getElementById('settings-btn')?.addEventListener('click', async () => {
+    showView('settings');
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session) {
+        initSettings(session.user.id);
+    }
 });
