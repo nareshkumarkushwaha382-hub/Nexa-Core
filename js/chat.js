@@ -1,311 +1,131 @@
-/**
- * @file chat.js
- * @description Nexa realtime private chat
- */
-
 import { supabase } from '../supabase-config.js';
 
-document.addEventListener('DOMContentLoaded', () => {
-    'use strict';
+let activeChannel = null;
+let currentSenderId = null;
+let activeRecipient = null;
 
-    const messageInput = document.getElementById('message-text-input');
-    const sendBtn = document.getElementById('send-message-btn');
-    const scrollArea = document.getElementById('message-scroll-area');
+export async function openChat(senderId, recipient) {
+    currentSenderId = senderId;
+    activeRecipient = recipient;
 
-    let currentUserId = null;
-    let receiverId = null;
-    let realtimeChannel = null;
+    // Toggle UI views for mobile/desktop chat area
+    document.getElementById('no-chat-selected')?.classList.add('hidden');
+    document.getElementById('active-chat-container')?.classList.remove('hidden');
 
-    // --------------------------------------------------
-    // START CHAT
-    // --------------------------------------------------
+    // Set chat header details
+    document.getElementById('chat-header-name').textContent = recipient.display_name || 'User';
+    document.getElementById('chat-header-username').textContent = '@' + recipient.username;
 
-    async function initChat() {
-        const {
-            data: { session },
-            error
-        } = await supabase.auth.getSession();
+    await loadMessages();
+    subscribeToRealtimeMessages();
+}
 
-        if (error) {
-            console.error('[Nexa Chat] Session error:', error);
-            return;
+// Fetch historical messages between current user and recipient
+async function loadMessages() {
+    const container = document.getElementById('messages-container');
+    if (!container) return;
+
+    container.innerHTML = '<p class="loading-text">Loading history...</p>';
+
+    try {
+        const { data: messages, error } = await supabase
+            .from('messages')
+            .select('*')
+            .or(`and(sender_id.eq.${currentSenderId},receiver_id.eq.${activeRecipient.id}),and(sender_id.eq.${activeRecipient.id},receiver_id.eq.${currentSenderId})`)
+            .order('created_at', { ascending: true });
+
+        if (error) throw error;
+
+        container.innerHTML = '';
+        if (messages && messages.length > 0) {
+            messages.forEach(msg => appendMessageToDOM(msg));
+        } else {
+            container.innerHTML = '<p class="empty-text">No messages yet. Say hello!</p>';
         }
-
-        if (!session) {
-            console.log('[Nexa Chat] User is not logged in.');
-            return;
-        }
-
-        currentUserId = session.user.id;
-
-        /*
-         * Get receiver ID from the chat page.
-         *
-         * You can set it in HTML like:
-         *
-         * <body data-receiver-id="USER-UUID">
-         *
-         * OR:
-         *
-         * <div id="chat-app" data-receiver-id="USER-UUID">
-         */
-        receiverId =
-            document.body.dataset.receiverId ||
-            document.getElementById('chat-app')?.dataset.receiverId ||
-            null;
-
-        if (!receiverId) {
-            console.log('[Nexa Chat] No receiver selected yet.');
-            setupRealtime();
-            return;
-        }
-
-        await loadMessages();
-        setupRealtime();
-    }
-
-    // --------------------------------------------------
-    // LOAD MESSAGES
-    // --------------------------------------------------
-
-    async function loadMessages() {
-        if (!currentUserId || !receiverId || !scrollArea) {
-            return;
-        }
-
-        const { data, error } = await supabase
-            .from('chat_messages')
-            .select('id, sender_id, receiver_id, content, created_at')
-            .or(
-                `and(sender_id.eq.${currentUserId},receiver_id.eq.${receiverId}),and(sender_id.eq.${receiverId},receiver_id.eq.${currentUserId})`
-            )
-            .order('created_at', {
-                ascending: true
-            });
-
-        if (error) {
-            console.error('[Nexa Chat] Load error:', error);
-            return;
-        }
-
-        scrollArea.innerHTML = '';
-
-        if (!data) {
-            return;
-        }
-
-        data.forEach(message => {
-            addMessageToScreen(message);
-        });
-
         scrollToBottom();
+    } catch (err) {
+        console.error('Error loading messages:', err);
+        container.innerHTML = '<p class="error-text">Failed to load chat history.</p>';
     }
+}
 
-    // --------------------------------------------------
-    // SEND MESSAGE
-    // --------------------------------------------------
+function appendMessageToDOM(msg) {
+    const container = document.getElementById('messages-container');
+    if (!container) return;
 
-    async function sendMessage() {
-        if (!messageInput) {
-            return;
-        }
+    // Remove empty state text if present
+    const emptyText = container.querySelector('.empty-text, .loading-text, .error-text');
+    if (emptyText) emptyText.remove();
 
-        if (!currentUserId) {
-            console.error('[Nexa Chat] User is not logged in.');
-            return;
-        }
+    const isMe = msg.sender_id === currentSenderId;
+    const msgDiv = document.createElement('div');
+    msgDiv.className = `message-bubble ${isMe ? 'sent' : 'received'}`;
+    msgDiv.innerHTML = `
+        <p>${escapeHTML(msg.content)}</p>
+        <span class="timestamp">${new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+    `;
+    container.appendChild(msgDiv);
+}
 
-        if (!receiverId) {
-            console.error('[Nexa Chat] No receiver selected.');
-            return;
-        }
+// Send message handler
+document.getElementById('message-form')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const input = document.getElementById('message-input');
+    const content = input.value.trim();
 
-        const content = messageInput.value.trim();
+    if (!content || !activeRecipient || !currentSenderId) return;
 
-        if (!content) {
-            return;
-        }
+    input.value = '';
 
-        const { data, error } = await supabase
-            .from('chat_messages')
+    try {
+        const { error } = await supabase
+            .from('messages')
             .insert({
-                sender_id: currentUserId,
-                receiver_id: receiverId,
+                sender_id: currentSenderId,
+                receiver_id: activeRecipient.id,
                 content: content
-            })
-            .select()
-            .single();
-
-        if (error) {
-            console.error('[Nexa Chat] Send error:', error);
-            return;
-        }
-
-        messageInput.value = '';
-        messageInput.focus();
-
-        /*
-         * Realtime will normally add the message.
-         *
-         * We don't add it here to prevent duplicates.
-         */
-    }
-
-    // --------------------------------------------------
-    // REALTIME
-    // --------------------------------------------------
-
-    function setupRealtime() {
-        if (realtimeChannel) {
-            supabase.removeChannel(realtimeChannel);
-        }
-
-        realtimeChannel = supabase
-            .channel('nexa-chat-messages')
-            .on(
-                'postgres_changes',
-                {
-                    event: 'INSERT',
-                    schema: 'public',
-                    table: 'chat_messages'
-                },
-                payload => {
-                    const message = payload.new;
-
-                    if (!currentUserId) {
-                        return;
-                    }
-
-                    /*
-                     * Only show messages belonging
-                     * to the currently open conversation.
-                     */
-                    const belongsToChat =
-                        (
-                            message.sender_id === currentUserId &&
-                            message.receiver_id === receiverId
-                        ) ||
-                        (
-                            message.sender_id === receiverId &&
-                            message.receiver_id === currentUserId
-                        );
-
-                    if (!belongsToChat) {
-                        return;
-                    }
-
-                    addMessageToScreen(message);
-                    scrollToBottom();
-                }
-            )
-            .subscribe(status => {
-                console.log('[Nexa Chat] Realtime:', status);
             });
+
+        if (error) throw error;
+    } catch (err) {
+        console.error('Error sending message:', err);
+        alert('Failed to send message.');
+    }
+});
+
+// Setup Supabase Realtime channel subscription with proper cleanup
+function subscribeToRealtimeMessages() {
+    if (activeChannel) {
+        supabase.removeChannel(activeChannel);
     }
 
-    // --------------------------------------------------
-    // DISPLAY MESSAGE
-    // --------------------------------------------------
-
-    function addMessageToScreen(message) {
-        if (!scrollArea) {
-            return;
-        }
-
-        /*
-         * Prevent duplicate messages.
-         */
-        if (
-            message.id &&
-            scrollArea.querySelector(
-                `[data-message-id="${message.id}"]`
-            )
-        ) {
-            return;
-        }
-
-        const isOutgoing =
-            message.sender_id === currentUserId;
-
-        const bubble = document.createElement('div');
-
-        bubble.className =
-            isOutgoing
-                ? 'message-bubble outgoing'
-                : 'message-bubble incoming';
-
-        if (message.id) {
-            bubble.dataset.messageId = message.id;
-        }
-
-        const text = document.createElement('p');
-
-        text.className = 'message-content';
-        text.textContent = message.content;
-
-        const time = document.createElement('span');
-
-        time.className = 'message-time';
-
-        time.textContent = new Date(
-            message.created_at
-        ).toLocaleTimeString([], {
-            hour: '2-digit',
-            minute: '2-digit'
-        });
-
-        bubble.appendChild(text);
-        bubble.appendChild(time);
-
-        scrollArea.appendChild(bubble);
-    }
-
-    // --------------------------------------------------
-    // SCROLL
-    // --------------------------------------------------
-
-    function scrollToBottom() {
-        if (!scrollArea) {
-            return;
-        }
-
-        scrollArea.scrollTop =
-            scrollArea.scrollHeight;
-    }
-
-    // --------------------------------------------------
-    // SEND BUTTON
-    // --------------------------------------------------
-
-    if (sendBtn) {
-        sendBtn.addEventListener(
-            'click',
-            sendMessage
-        );
-    }
-
-    // --------------------------------------------------
-    // ENTER TO SEND
-    // --------------------------------------------------
-
-    if (messageInput) {
-        messageInput.addEventListener(
-            'keydown',
-            event => {
-                if (
-                    event.key === 'Enter' &&
-                    !event.shiftKey
-                ) {
-                    event.preventDefault();
-                    sendMessage();
-                }
+    activeChannel = supabase
+        .channel(`chat_${currentSenderId}_${activeRecipient.id}`)
+        .on(
+            'postgres_changes',
+            {
+                event: 'INSERT',
+                schema: 'public',
+                table: 'messages',
+                filter: `or(and(sender_id.eq.${currentSenderId},receiver_id.eq.${activeRecipient.id}),and(sender_id.eq.${activeRecipient.id},receiver_id.eq.${currentSenderId}))`
+            },
+            (payload) => {
+                appendMessageToDOM(payload.new);
+                scrollToBottom();
             }
-        );
+        )
+        .subscribe();
+}
+
+function scrollToBottom() {
+    const container = document.getElementById('messages-container');
+    if (container) {
+        container.scrollTop = container.scrollHeight;
     }
+}
 
-    // --------------------------------------------------
-    // START
-    // --------------------------------------------------
-
-    initChat();
-});            
+function escapeHTML(str) {
+    return str.replace(/[&<>'"]/g, 
+        tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+    );
+}
