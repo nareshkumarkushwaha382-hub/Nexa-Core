@@ -1,54 +1,90 @@
-/**
- * @file home.js
- * @description Manages Home screen sidebar navigation, tabs, and responsive mobile switching.
- */
+import { supabase } from '../supabase-config.js';
+import { openChat } from './chat.js';
 
-document.addEventListener('DOMContentLoaded', () => {
-    'use strict';
+let currentUserId = null;
 
-    const navItems = document.querySelectorAll('.home-sidebar .nav-item');
-    const chatsPanel = document.getElementById('primary-home-panel');
-    const chatWorkspace = document.getElementById('workspace-area');
-    const settingsView = document.getElementById('settings-view');
+export async function initHome(userId) {
+    currentUserId = userId;
+    await loadConversations();
+    setupSearch();
+}
 
-    if (navItems.length > 0) {
-        navItems.forEach(item => {
-            item.addEventListener('click', () => {
-                const tab = item.getAttribute('data-tab');
-                navItems.forEach(nav => nav.classList.remove('active'));
-                item.classList.add('active');
+// Load recent conversations or user connections
+async function loadConversations() {
+    const listContainer = document.getElementById('conversations-list');
+    if (!listContainer) return;
 
-                if (tab === 'chats') {
-                    if (chatsPanel) chatsPanel.classList.remove('hidden');
-                    if (chatWorkspace) chatWorkspace.classList.remove('hidden');
-                    if (settingsView) settingsView.classList.add('hidden');
-                } else if (tab === 'settings') {
-                    if (chatsPanel) chatsPanel.classList.add('hidden');
-                    if (chatWorkspace) chatsPanel.classList.add('hidden');
-                    if (settingsView) settingsView.classList.remove('hidden');
-                }
-            });
-        });
+    listContainer.innerHTML = '<p class="loading-text">Loading chats...</p>';
+
+    try {
+        // Fetch profiles excluding the current user to populate searchable/recent contacts
+        const { data: users, error } = await supabase
+            .from('profiles')
+            .select('*')
+            .neq('id', currentUserId)
+            .limit(20);
+
+        if (error) throw error;
+
+        if (!users || users.length === 0) {
+            listContainer.innerHTML = '<p class="empty-text">No users found. Use search to find friends.</p>';
+            return;
+        }
+
+        renderConversationList(users);
+    } catch (err) {
+        console.error('Error loading conversations:', err);
+        listContainer.innerHTML = '<p class="error-text">Failed to load chats.</p>';
     }
+}
 
-    // Mobile responsive chat drawer support
-    const chatItems = document.querySelectorAll('.chat-item');
-    chatItems.forEach(chat => {
-        chat.addEventListener('click', () => {
-            if (window.innerWidth <= 900) {
-                if (chatsPanel) chatsPanel.classList.add('mobile-hidden');
-                if (chatWorkspace) chatWorkspace.classList.remove('mobile-hidden');
-            }
+function renderConversationList(users) {
+    const listContainer = document.getElementById('conversations-list');
+    listContainer.innerHTML = '';
+
+    users.forEach(user => {
+        const item = document.createElement('div');
+        item.className = 'conversation-item';
+        item.innerHTML = `
+            <div class="avatar-placeholder">${user.display_name ? user.display_name.charAt(0).toUpperCase() : 'U'}</div>
+            <div class="conv-info">
+                <h4>${user.display_name || 'Unnamed'}</h4>
+                <span>@${user.username}</span>
+            </div>
+        `;
+        item.addEventListener('click', () => {
+            openChat(currentUserId, user);
         });
+        listContainer.appendChild(item);
     });
+}
 
-    window.addEventListener('nexa:userLoaded', (e) => {
-        const profile = e.detail;
-        if (!profile) return;
-        const displayNameEl = document.getElementById('settings-display-name');
-        const usernameHandleEl = document.getElementById('settings-username-handle');
+// User Search functionality
+function setupSearch() {
+    const searchInput = document.getElementById('user-search-input');
+    if (!searchInput) return;
 
-        if (displayNameEl) displayNameEl.textContent = profile.display_name || 'Pioneer';
-        if (usernameHandleEl) usernameHandleEl.textContent = `@${profile.username || 'user'}`;
+    searchInput.addEventListener('input', async (e) => {
+        const query = e.target.value.trim().toLowerCase();
+        const listContainer = document.getElementById('conversations-list');
+
+        if (!query) {
+            loadConversations();
+            return;
+        }
+
+        try {
+            const { data: users, error } = await supabase
+                .from('profiles')
+                .select('*')
+                .neq('id', currentUserId)
+                .or(`username.ilike.%${query}%,display_name.ilike.%${query}%`)
+                .limit(10);
+
+            if (error) throw error;
+            renderConversationList(users || []);
+        } catch (err) {
+            console.error('Search error:', err);
+        }
     });
-});
+}
