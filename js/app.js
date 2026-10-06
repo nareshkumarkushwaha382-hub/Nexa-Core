@@ -16,6 +16,7 @@ const Views = {
 /**
  * Switch active view container visibility safely
  * @param {string} viewName 
+ * @param {any} viewData 
  */
 export function showView(viewName, viewData = null) {
     Object.keys(Views).forEach(name => {
@@ -48,7 +49,7 @@ async function initApp() {
     try {
         showView('splash');
 
-        // Fetch current session with safety timeout fallback
+        // Fetch current session with safety timeout fallback (8 seconds)
         const sessionPromise = supabase.auth.getSession();
         const timeoutPromise = new Promise((_, reject) => 
             setTimeout(() => reject(new Error('Session fetch timeout')), 8000)
@@ -67,7 +68,7 @@ async function initApp() {
         const userId = session.user.id;
 
         // Check if user has completed profile & username setup in Supabase
-        const { data: profile, error: profileError } = await supabase
+        let { data: profile, error: profileError } = await supabase
             .from('profiles')
             .select('*')
             .eq('id', userId)
@@ -75,6 +76,20 @@ async function initApp() {
 
         if (profileError) {
             console.warn('Profile fetch warning:', profileError);
+        }
+
+        // If profile row doesn't exist yet (first-time Google login), auto-create it
+        if (!profile) {
+            const { data: newProfile, error: createError } = await supabase
+                .from('profiles')
+                .insert({ id: userId })
+                .select()
+                .single();
+
+            if (createError) {
+                console.error('Error auto-creating profile row:', createError);
+            }
+            profile = newProfile;
         }
 
         // Sequential onboarding check
@@ -87,8 +102,8 @@ async function initApp() {
         }
 
     } catch (err) {
-        console.error('Initialization error:', err);
-        // Fallback gracefully to welcome screen instead of freezing on splash
+        console.error('Initialization error caught:', err);
+        // Fallback gracefully to welcome screen instead of freezing indefinitely on splash
         showView('welcome');
     }
 }
