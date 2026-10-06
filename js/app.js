@@ -1,6 +1,9 @@
 import { supabase } from '../supabase-config.js';
+import { initWelcome } from './welcome.js';
+import { initHome } from './home.js';
+import { initSettings } from './settings.js';
 
-// Central View Manager
+// Central View Manager Registry
 const Views = {
     splash: document.getElementById('splash-view'),
     welcome: document.getElementById('welcome-view'),
@@ -10,80 +13,94 @@ const Views = {
     settings: document.getElementById('settings-view')
 };
 
-export function showView(viewName) {
+/**
+ * Switch active view container visibility safely
+ * @param {string} viewName 
+ */
+export function showView(viewName, viewData = null) {
     Object.keys(Views).forEach(name => {
-        if (Views[name]) {
+        const viewEl = Views[name];
+        if (viewEl) {
             if (name === viewName) {
-                Views[name].classList.remove('hidden');
-                Views[name].classList.add('active');
+                viewEl.classList.remove('hidden');
+                viewEl.classList.add('active');
+
+                // Trigger view-specific initializers when rendered
+                if (name === 'welcome') {
+                    initWelcome();
+                } else if (name === 'home' && viewData) {
+                    initHome(viewData);
+                } else if (name === 'settings' && viewData) {
+                    initSettings(viewData);
+                }
             } else {
-                Views[name].classList.remove('active');
-                Views[name].classList.add('hidden');
+                viewEl.classList.remove('active');
+                viewEl.classList.add('hidden');
             }
         }
     });
 }
 
-// Application Initialization & Session Guard
+/**
+ * Main application initialization & sequential session/profile guard
+ */
 async function initApp() {
     try {
         showView('splash');
 
-        // Check active Supabase session
-        const { data: { session }, error } = await supabase.auth.getSession();
+        // Fetch current session with safety timeout fallback
+        const sessionPromise = supabase.auth.getSession();
+        const timeoutPromise = new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('Session fetch timeout')), 8000)
+        );
+
+        const { data: { session }, error } = await Promise.race([sessionPromise, timeoutPromise]);
+        
         if (error) throw error;
 
+        // If no active session, show welcome/login screen
         if (!session) {
             showView('welcome');
             return;
         }
 
-        // Check if user has completed profile & username setup
-        const { data: profile, profileError } = await supabase
+        const userId = session.user.id;
+
+        // Check if user has completed profile & username setup in Supabase
+        const { data: profile, error: profileError } = await supabase
             .from('profiles')
             .select('*')
-            .eq('id', session.user.id)
-            .single();
+            .eq('id', userId)
+            .maybeSingle();
 
-        if (profileError && profileError.code !== 'PGRST116') {
-            console.error('Error fetching profile:', profileError);
+        if (profileError) {
+            console.warn('Profile fetch warning:', profileError);
         }
 
+        // Sequential onboarding check
         if (!profile || !profile.username) {
             showView('username');
         } else if (!profile.display_name) {
             showView('profile');
         } else {
-            showView('home');
-            // TODO: Initialize home/chat modules here
+            showView('home', userId);
         }
+
     } catch (err) {
         console.error('Initialization error:', err);
+        // Fallback gracefully to welcome screen instead of freezing on splash
         showView('welcome');
     }
 }
 
-// Handle Google Login Trigger
-document.getElementById('google-login-btn')?.addEventListener('click', async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-            redirectTo: window.location.origin
-        }
-    });
-    if (error) {
-        alert('Authentication failed: ' + error.message);
-    }
-});
-
-// Listen to auth state changes to handle post-OAuth redirection cleanly
-supabase.auth.onAuthStateChange((event, session) => {
+// Listen to Supabase Auth state changes (e.g. successful Google OAuth callback)
+supabase.auth.onAuthStateChange(async (event, session) => {
     if (event === 'SIGNED_IN' && session) {
-        initApp();
+        await initApp();
     } else if (event === 'SIGNED_OUT') {
         showView('welcome');
     }
 });
 
-// Run init on load
+// Run initialization on DOM load
 window.addEventListener('DOMContentLoaded', initApp);
