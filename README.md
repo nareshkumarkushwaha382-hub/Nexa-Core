@@ -2,7 +2,7 @@
 
 > **Connect Without Limits.**
 
-Nexa is a modern, secure, and premium messaging platform built with Firebase and modern web technologies. It is designed to provide a fast, elegant, and reliable communication experience while maintaining a clean and professional user interface.
+Nexa is a modern, secure, and premium messaging platform built with Supabase and modern web technologies. It is designed to provide a fast, elegant, and reliable communication experience while maintaining a clean and professional user interface.
 
 ---
 
@@ -13,8 +13,7 @@ Nexa is a modern, secure, and premium messaging platform built with Firebase and
 - 💬 Real-time messaging
 - 🌙 Premium dark theme
 - 📱 Responsive design
-- ⚡ Firebase Realtime Database
-- ☁ Firebase Hosting
+- ⚡ Supabase Realtime
 - 🎨 Modern UI/UX
 - 🔒 Secure user authentication
 
@@ -22,69 +21,42 @@ Nexa is a modern, secure, and premium messaging platform built with Firebase and
 
 # 🛠 Tech Stack
 
-## Frontend
-
-- HTML5
-- CSS3
-- JavaScript (ES6)
-
-## Backend
-
-- Firebase Authentication
-- Firebase Realtime Database
-
-## Hosting
-
-- Firebase Hosting
+- HTML5, CSS3, JavaScript (ES modules, no build step)
+- Supabase (Auth with Google, Postgres, Realtime)
+- GitHub Pages hosting
 
 ---
 
 # 📂 Project Structure
 
 ```
-Nexa/
-│
+Nexa-Core/
 ├── index.html
+├── supabase-config.js
+├── supabase-schema.sql
+├── 404.html
 ├── css/
 ├── js/
-├── html/
-├── assets/
-├── README.md
-├── LICENSE
-└── .gitignore
+└── README.md
 ```
 
 ---
 
-# 🚀 Getting Started
+# 🚀 Setup
 
-Clone the repository
-
-```bash
-git clone https://github.com/nareshkumarkushwaha382-hub/Nexa-Core.git
-```
-
-Open the project folder.
-
-Install dependencies (if required)
+1. Create a project at supabase.com.
+2. SQL Editor → paste and run `supabase-schema.sql`.
+3. Authentication → Providers → enable **Google** (add your Google OAuth client ID/secret).
+4. Authentication → URL Configuration → set Site URL and Redirect URLs to your site
+   (e.g. `https://<user>.github.io/Nexa-Core/` and `http://localhost:8000/`).
+5. Put your Project URL and anon key in `supabase-config.js`.
+6. Serve over HTTP (ES modules don't work from `file://`):
 
 ```bash
-npm install
+python3 -m http.server 8000
 ```
 
-Run the project.
-
----
-
-# 🔥 Firebase
-
-This project uses:
-
-- Firebase Authentication
-- Firebase Realtime Database
-- Firebase Hosting
-
-Create your own Firebase project and replace the Firebase configuration inside the project with your own credentials.
+Open http://localhost:8000
 
 ---
 

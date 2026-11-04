@@ -42,8 +42,8 @@
                 <h2>Choose a Username</h2>
                 <p>This is your unique handle on NEXA.</p>
                 <form id="username-form">
-                    <input type="text" id="username-input" placeholder="e.g. alex_dev" required pattern="^[a-zA-Z0-9_]{3,20}$">
-                    <small>3-20 characters. Letters, numbers, and underscores only.</small>
+                    <input type="text" id="username-input" placeholder="e.g. alex_dev" required pattern="^[a-zA-Z0-9_]{3,24}$">
+                    <small>3-24 characters. Letters, numbers, and underscores only (saved in lowercase).</small>
                     <button type="submit" class="primary-btn">Continue</button>
                 </form>
             </div>
@@ -82,7 +82,18 @@
                         <p>Select a conversation or search for a user to start messaging.</p>
                     </div>
                     <!-- Active Chat Area -->
-                    <div id="active-chat-container" class="hidden"></div>
+                    <div id="active-chat-container" class="hidden">
+                        <header class="chat-header">
+                            <button id="chat-back-btn" class="mobile-only" title="Back">←</button>
+                            <h4 id="chat-header-name"></h4>
+                            <span id="chat-header-username"></span>
+                        </header>
+                        <div id="messages-container" class="messages-container"></div>
+                        <form id="message-form" class="message-form">
+                            <input type="text" id="message-input" placeholder="Type a message..." autocomplete="off" maxlength="2000">
+                            <button type="submit" class="send-btn">Send</button>
+                        </form>
+                    </div>
                 </main>
             </div>
         </section>
